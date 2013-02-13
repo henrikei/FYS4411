@@ -1,5 +1,9 @@
 #include "vmcsolver.h"
 #include "lib.h"
+#include "waveFunction/wavefunction.h"
+#include "waveFunction/helium.h"
+#include "waveFunction/heliumwithjastrow.h"
+#include "localenergy/localEnergy.h"
 
 #include <armadillo>
 #include <iostream>
@@ -8,20 +12,26 @@
 using namespace arma;
 using namespace std;
 
-VMCSolver::VMCSolver(double a, double b) :
+VMCSolver::VMCSolver() :
     nDimensions(3),
     charge(2),
-    stepLength(1.0),
+    stepLength(0.3),
     nParticles(2),
     h(0.001),
     h2(1000000),
     idum(-time(NULL)),
-    //idum(-1),
     // alpha(0.5*charge),
+    beta(0.4),
     nCycles(1000000)
 {
-    alpha = a;
-    beta = b;
+}
+
+void VMCSolver::setWaveFunction(waveFunction *w){
+    wf = w;
+}
+
+void VMCSolver::setLocalEnergy(const localEnergy &E){
+    localE = E;
 }
 
 void VMCSolver::runMonteCarloIntegration()
@@ -49,7 +59,7 @@ void VMCSolver::runMonteCarloIntegration()
     for(int cycle = 0; cycle < nCycles; cycle++) {
 
         // Store the current value of the wave function
-        waveFunctionOld = waveFunction(rOld);
+        waveFunctionOld = wf->getValue(rOld);
 
         // New position to test
         for(int i = 0; i < nParticles; i++) {
@@ -58,7 +68,7 @@ void VMCSolver::runMonteCarloIntegration()
             }
 
             // Recalculate the value of the wave function
-            waveFunctionNew = waveFunction(rNew);
+            waveFunctionNew = wf->getValue(rNew);
 
             // Check for step acceptance (if yes, update position, if no, reset position)
             if(ran2(&idum) <= (waveFunctionNew*waveFunctionNew) / (waveFunctionOld*waveFunctionOld)) {
@@ -72,17 +82,16 @@ void VMCSolver::runMonteCarloIntegration()
                 }
             }
             // update energies
-            deltaE = localEnergy(rNew);
+            deltaE = localE.getValue(rNew, wf, h, charge);
             energySum += deltaE;
             energySquaredSum += deltaE*deltaE;
         }
     }
-    double energy = energySum/(nCycles * nParticles);
-    double energySquared = energySquaredSum/(nCycles * nParticles);
-    cout << "Energy: " << energy << " Energy (squared sum): " << energySquared << " Variance: " << energySquared - energy*energy <<endl;
+    energy = energySum/(nCycles * nParticles);
+    variance = energySquaredSum/(nCycles * nParticles) - energy*energy;
 }
 
-double VMCSolver::localEnergy(const mat &r)
+/*double VMCSolver::localEnergy(const mat &r)
 {
     mat rPlus = zeros<mat>(nParticles, nDimensions);
     mat rMinus = zeros<mat>(nParticles, nDimensions);
@@ -92,7 +101,7 @@ double VMCSolver::localEnergy(const mat &r)
     double waveFunctionMinus = 0;
     double waveFunctionPlus = 0;
 
-    double waveFunctionCurrent = waveFunction(r);
+    double waveFunctionCurrent = wf->getValue(r);
 
     // Kinetic energy
 
@@ -101,8 +110,8 @@ double VMCSolver::localEnergy(const mat &r)
         for(int j = 0; j < nDimensions; j++) {
             rPlus(i,j) += h;
             rMinus(i,j) -= h;
-            waveFunctionMinus = waveFunction(rMinus);
-            waveFunctionPlus = waveFunction(rPlus);
+            waveFunctionMinus = wf->getValue(rMinus);
+            waveFunctionPlus = wf->getValue(rPlus);
             kineticEnergy -= (waveFunctionMinus + waveFunctionPlus - 2 * waveFunctionCurrent);
             rPlus(i,j) = r(i,j);
             rMinus(i,j) = r(i,j);
@@ -133,28 +142,12 @@ double VMCSolver::localEnergy(const mat &r)
     }
 
     return kineticEnergy + potentialEnergy;
+}*/
+
+double VMCSolver::getEnergy(){
+    return energy;
 }
 
-double VMCSolver::waveFunction(const mat &r)
-{
-    double argument1 = 0;
-    for(int i = 0; i < nParticles; i++) {
-        double rSingleParticle = 0;
-        for(int j = 0; j < nDimensions; j++) {
-            rSingleParticle += r(i,j) * r(i,j);
-        }
-        argument1 += sqrt(rSingleParticle)*alpha;
-    }
-    double argument2 = 0;
-    for(int i = 0; i < nParticles; i++) {
-        for(int j = i + 1; j < nParticles; j++) {
-            double r12 = 0;
-            for(int k = 0; k < nDimensions; k++) {
-                r12 += (r(i,k) - r(j,k))*(r(i,k) - r(j,k));
-            }
-            r12 = sqrt(r12);
-            argument2 += r12/(2*(1 + beta*r12));
-        }
-    }
-    return exp(-argument1 + argument2);
+double VMCSolver::getVariance(){
+    return variance;
 }
