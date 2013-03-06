@@ -1,19 +1,14 @@
-#include "heliumwithjastrow.h"
+#include "heliumJastrowNum.h"
 #include "wavefunction.h"
 
-heliumWithJastrow::heliumWithJastrow()
+heliumJastrowNum::heliumJastrowNum()
 {
+    nParticles = 2;
+    nDimensions = 3;
+    quantumForce = zeros(2,3);
 }
 
-void heliumWithJastrow::setAlpha(const double &a){
-    alpha = a;
-}
-
-void heliumWithJastrow::setBeta(const double &b){
-    beta = b;
-}
-
-double heliumWithJastrow::getValue(const mat &r){
+double heliumJastrowNum::getValue(const mat &r){
     int nParticles = r.n_rows;
     int nDimensions = r.n_cols;
     double argument1 = 0;

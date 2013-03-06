@@ -5,18 +5,32 @@ CONFIG -= qt
 LIBS += -llapack -larmadillo
 
 SOURCES += main.cpp \
-    vmcsolver.cpp \
     lib.cpp \
     waveFunction/wavefunction.cpp \
-    waveFunction/helium.cpp \
-    waveFunction/heliumwithjastrow.cpp \
-    localenergy/localEnergy.cpp
+    localenergy/localEnergy.cpp \
+    waveFunction/heliumSimpleNum.cpp \
+    waveFunction/heliumJastrowNum.cpp \
+    waveFunction/heliumsimpleanalytic.cpp \
+    waveFunction/heliumjastrowanalytic.cpp \
+    vmcsolver/vmcsolver.cpp \
+    vmcsolver/vmcsolverbruteforce.cpp \
+    vmcsolver/vmcsolverimportancesampling.cpp
 
 HEADERS += \
-    vmcsolver.h \
     lib.h \
     waveFunction/wavefunction.h \
     localenergy/localEnergy.h \
-    waveFunction/heliumWithJastrow.h \
-    waveFunction/helium.h
+    waveFunction/heliumJastrowNum.h \
+    waveFunction/heliumSimpleNum.h \
+    waveFunction/heliumsimpleanalytic.h \
+    waveFunction/heliumjastrowanalytic.h \
+    vmcsolver/vmcsolver.h \
+    vmcsolver/vmcsolverbruteforce.h \
+    vmcsolver/vmcsolverimportancesampling.h
 
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE += -O3
+
+release {
+    DEFINES += ARMA_NO_DEBUG
+}

@@ -3,15 +3,12 @@
 
 #include "wavefunction.h"
 
-class helium: public waveFunction
+class heliumSimpleNum: public waveFunction
 {
-private:
-    double alpha;
 public:
-    helium();
+    heliumSimpleNum();
     void setAlpha(const double);
     double getValue(const mat &);
-    double getLaplacian(const mat &, const double &);
 };
 
 #endif // HELIUM_H

@@ -1,7 +1,11 @@
-#include "vmcsolver.h"
+#include "vmcsolver/vmcsolver.h"
+#include "vmcsolver/vmcsolverbruteforce.h"
+#include "vmcsolver/vmcsolverimportancesampling.h"
 #include "waveFunction/wavefunction.h"
-#include "waveFunction/helium.h"
-#include "waveFunction/heliumwithjastrow.h"
+#include "waveFunction/heliumSimpleNum.h"
+#include "waveFunction/heliumsimpleanalytic.h"
+#include "waveFunction/heliumJastrowNum.h"
+#include "waveFunction/heliumjastrowanalytic.h"
 #include "localenergy/localEnergy.h"
 
 #include <iostream>
@@ -13,21 +17,25 @@ using namespace std;
 
 int main()
 {   
-    helium *wfhelium = new helium;
+    /*heliumJastrowNum *wfhelium = new heliumJastrowNum;
     localEnergy localE;
-    wfhelium->setAlpha(1.8);
+    wfhelium->setAlpha(1.844);
+    wfhelium->setBeta(0.36);
     waveFunction *wf = wfhelium;
     VMCSolver *solver = new VMCSolver;
     solver->setWaveFunction(wf);
     solver->setLocalEnergy(localE);
     solver->runMonteCarloIntegration();
-    cout << solver->getEnergy();
-    /*heliumWithJastrow *wf1 = new heliumWithJastrow;
+    cout << solver->getEnergy();*/
+    VMCSolver *solver = new VMCSolverImportanceSampling();
+    heliumJastrowAnalytic *wf = new heliumJastrowAnalytic;
     localEnergy localE;
-    double alphamin = 1.5;
-    double alphamax = 2;
+    solver->setLocalEnergy(localE);
+    solver->setWaveFunction(wf);
+    double alphamin = 1;
+    double alphamax = 3;
     double betamin = 0;
-    double betamax = 0.5;
+    double betamax = 1;
     int n = 10;
 
     ofstream ofile;
@@ -36,20 +44,18 @@ int main()
     double beta;
     double deltaAlpha = (double) (alphamax - alphamin)/n;
     double deltaBeta = (double) (betamax - betamin)/n;
-    for (int i = 0; i < n+1; i++){
+    for (int i = 0; i < n + 1; i++){
         for (int j = 0; j < n+1; j++){
             alpha = alphamin + deltaAlpha*i;
             beta = betamin + deltaBeta*j;
-            wf1->setAlpha(alpha);
-            wf1->setBeta(beta);
-            waveFunction *wf = wf1;
-            VMCSolver *solver = new VMCSolver();
-            solver->setWaveFunction(wf);
-            solver->setLocalEnergy(localE);
+            wf->setAlpha(alpha);
+            wf->setBeta(beta);
             solver->runMonteCarloIntegration();
-            ofile << alpha << "  " << beta << "  " << solver->getEnergy() << "  " << solver->getEnergy() << endl;
+            ofile << solver->getEnergy() << "  ";
+            cout << "j: " << j << endl;
         }
+        ofile << endl;
     }
-    ofile.close();*/
+    ofile.close();
     return 0;
 }
