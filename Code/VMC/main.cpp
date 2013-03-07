@@ -36,7 +36,7 @@ int main()
     double alphamax = 3;
     double betamin = 0;
     double betamax = 1;
-    int n = 10;
+    int n = 40;
 
     ofstream ofile;
     ofile.open("results.dat");
