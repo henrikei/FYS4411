@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     waveFunction/heliumjastrowanalytic.cpp \
     vmcsolver/vmcsolver.cpp \
     vmcsolver/vmcsolverbruteforce.cpp \
-    vmcsolver/vmcsolverimportancesampling.cpp
+    vmcsolver/vmcsolverimportancesampling.cpp \
+    orbitals/orbitals.cpp
 
 HEADERS += \
     lib.h \
@@ -26,7 +27,8 @@ HEADERS += \
     waveFunction/heliumjastrowanalytic.h \
     vmcsolver/vmcsolver.h \
     vmcsolver/vmcsolverbruteforce.h \
-    vmcsolver/vmcsolverimportancesampling.h
+    vmcsolver/vmcsolverimportancesampling.h \
+    orbitals/orbitals.h
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3

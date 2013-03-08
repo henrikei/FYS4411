@@ -17,16 +17,6 @@ using namespace std;
 
 int main()
 {   
-    /*heliumJastrowNum *wfhelium = new heliumJastrowNum;
-    localEnergy localE;
-    wfhelium->setAlpha(1.844);
-    wfhelium->setBeta(0.36);
-    waveFunction *wf = wfhelium;
-    VMCSolver *solver = new VMCSolver;
-    solver->setWaveFunction(wf);
-    solver->setLocalEnergy(localE);
-    solver->runMonteCarloIntegration();
-    cout << solver->getEnergy();*/
     VMCSolver *solver = new VMCSolverImportanceSampling();
     heliumJastrowAnalytic *wf = new heliumJastrowAnalytic;
     localEnergy localE;
