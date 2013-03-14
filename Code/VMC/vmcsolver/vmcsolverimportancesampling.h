@@ -9,7 +9,7 @@ class VMCSolverImportanceSampling : public VMCSolver
 public:
     VMCSolverImportanceSampling();
     void runMonteCarloIntegration();
-    double getGreensFunctionRatio(const mat &, const mat &, const mat &, const mat &, const int &, const double &);
+    double getGreensFunctionRatio(const mat &, const mat &, const mat &, const mat &, const double &);
 private:
     double timeStep;
 };

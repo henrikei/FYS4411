@@ -4,6 +4,8 @@
 #include "waveFunction/heliumSimpleNum.h"
 #include "waveFunction/heliumJastrowNum.h"
 #include "localenergy/localEnergy.h"
+#include "Slater/slater.h"
+#include "orbitals/orbitals.h"
 
 #include <armadillo>
 #include <iostream>
@@ -43,6 +45,7 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
     // Store the current value of the wave function
     waveFunctionOld = wf->getValue(rOld);
 
+
     // trial Monte Carlo loop to achieve acceptance rate of approximately 0.5
     stepLength = 0;
     double acceptRate = 0;
@@ -67,16 +70,20 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
                     }
                 }
             }
-            //cout << "dummyCycle: " << cycle << endl;
         }
         acceptRate = (double) acceptCount/(nDummyCycles*nParticles);
     }
 
 
+
+
+    /////////// Testing Slater Class ///////////////
+    Slater slater;
+    slater.update(rNew);
+
+
     // actual Monte Carlo loop
     for(int cycle = 0; cycle < nCycles; cycle++) {
-
-        //cout << "cycle: " << cycle << endl;
 
         // Store the current value of the wave function
         waveFunctionOld = wf->getValue(rOld);
@@ -90,12 +97,18 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
             // Recalculate the value of the wave function
             waveFunctionNew = wf->getValue(rNew);
 
+
+            cout << "Old ratio: " << waveFunctionNew*waveFunctionNew/(waveFunctionOld*waveFunctionOld) << "  " << endl;
+            cout << "New ratio: " << slater.getRatio(i,rNew)*slater.getRatio(i,rNew) << endl;
+
+
             // Check for step acceptance (if yes, update position, if no, reset position)
             if(ran2(&idum) <= (waveFunctionNew*waveFunctionNew) / (waveFunctionOld*waveFunctionOld)) {
                 for(int j = 0; j < nDimensions; j++) {
                     rOld(i,j) = rNew(i,j);
-                    waveFunctionOld = waveFunctionNew;
+                    waveFunctionOld = waveFunctionNew;                    
                 }
+                slater.update(rNew);
             } else {
                 for(int j = 0; j < nDimensions; j++) {
                     rNew(i,j) = rOld(i,j);

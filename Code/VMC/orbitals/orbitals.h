@@ -10,15 +10,16 @@ class Orbitals
 {
 public:
     Orbitals();
-    double getValue(const int &quantumNum, const int &particleNum, double const &alpha, const mat &R);
-    vec getGradient(const int &quantumNum, const int &particleNum, double const &alpha, const mat &R);
-    mat getLaplacian(const int &quantumNum, const int &particleNum, double const &alpha, const mat &R);
+    void setNumParticles(const int &nPart);
+    double getValue(const int &particleNum, const int &quantumNum, const mat &R);
+    rowvec3 getGradient(const int &particleNum, const int &quantumNum, const mat &R);
+    double getLaplacian(const int &particleNum, const int &quantumNum, const mat &R);
 private:
     int nParticles;
     int nDimensions;
     double alpha;
     double value;
-    vec gradient;
+    rowvec3 gradient;
     double laplacian;
 };
 

@@ -25,6 +25,10 @@ int waveFunction::getNDimensions(){
     return nDimensions;
 }
 
+mat waveFunction::getQuantumForce(const mat &r){
+    return r;
+}
+
 double waveFunction::getLaplacian(const mat &r, const double &h){
     double laplacian = 0;
     mat rPlus = r;

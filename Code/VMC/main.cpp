@@ -6,7 +6,9 @@
 #include "waveFunction/heliumsimpleanalytic.h"
 #include "waveFunction/heliumJastrowNum.h"
 #include "waveFunction/heliumjastrowanalytic.h"
+#include "waveFunction/berylliumsimplenum.h"
 #include "localenergy/localEnergy.h"
+#include "orbitals/orbitals.h"
 
 #include <iostream>
 #include <armadillo>
@@ -16,36 +18,42 @@ using namespace std;
 
 
 int main()
-{   
-    VMCSolver *solver = new VMCSolverImportanceSampling();
-    heliumJastrowAnalytic *wf = new heliumJastrowAnalytic;
+{
+    VMCSolver *solver = new VMCSolverBruteForce();
+    heliumSimpleAnalytic *wf = new heliumSimpleAnalytic();
     localEnergy localE;
-    solver->setLocalEnergy(localE);
+    wf->setAlpha(2);
+    wf->setBeta(0.36);
     solver->setWaveFunction(wf);
-    double alphamin = 1;
-    double alphamax = 3;
-    double betamin = 0;
-    double betamax = 1;
-    int n = 40;
+    solver->setLocalEnergy(localE);
+    solver->runMonteCarloIntegration();
+    cout << "Energy: " << solver->getEnergy() << endl << "Variance: " << solver->getVariance();
 
-    ofstream ofile;
-    ofile.open("results.dat");
-    double alpha;
-    double beta;
-    double deltaAlpha = (double) (alphamax - alphamin)/n;
-    double deltaBeta = (double) (betamax - betamin)/n;
-    for (int i = 0; i < n + 1; i++){
-        for (int j = 0; j < n+1; j++){
-            alpha = alphamin + deltaAlpha*i;
-            beta = betamin + deltaBeta*j;
-            wf->setAlpha(alpha);
-            wf->setBeta(beta);
-            solver->runMonteCarloIntegration();
-            ofile << solver->getEnergy() << "  ";
-            cout << "j: " << j << endl;
-        }
-        ofile << endl;
-    }
-    ofile.close();
+
+//    double alphamin = 1;
+//    double alphamax = 3;
+//    double betamin = 0;
+//    double betamax = 1;
+//    int n = 10;
+
+//    ofstream ofile;
+//    ofile.open("results.dat");
+//    double alpha;
+//    double beta;
+//    double deltaAlpha = (double) (alphamax - alphamin)/n;
+//    double deltaBeta = (double) (betamax - betamin)/n;
+//    for (int i = 0; i < n + 1; i++){
+//        for (int j = 0; j < n+1; j++){
+//            alpha = alphamin + deltaAlpha*i;
+//            beta = betamin + deltaBeta*j;
+//            wf->setAlpha(alpha);
+//            wf->setBeta(beta);
+//            solver->runMonteCarloIntegration();
+//            ofile << solver->getEnergy() << "  ";
+//            cout << "j: " << j << endl;
+//        }
+//        ofile << endl;
+//    }
+//    ofile.close();
     return 0;
 }

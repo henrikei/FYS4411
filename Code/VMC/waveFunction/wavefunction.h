@@ -14,7 +14,7 @@ public:
     int getNParticles();
     int getNDimensions();
     virtual double getValue(const mat &r)=0;
-    virtual mat getQuantumForce(const mat &r)=0;
+    virtual mat getQuantumForce(const mat &r);
     virtual double getLaplacian(const mat &r, const double &);
 protected:
     double alpha;

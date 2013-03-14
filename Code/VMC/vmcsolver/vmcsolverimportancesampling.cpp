@@ -48,7 +48,7 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
             quantumForceNew = wf->getQuantumForce(rNew);
 
             // Check for step acceptance (if yes, update position and quantum force, if no, reset position)
-            if(ran2(&idum) <= (getGreensFunctionRatio(rNew, rOld, quantumForceNew, quantumForceOld, i, timeStep)*waveFunctionNew*waveFunctionNew) / (waveFunctionOld*waveFunctionOld)) {
+            if(ran2(&idum) <= (getGreensFunctionRatio(rNew, rOld, quantumForceNew, quantumForceOld, timeStep)*waveFunctionNew*waveFunctionNew) / (waveFunctionOld*waveFunctionOld)) {
                 for(int j = 0; j < nDimensions; j++) {
                     rOld(i,j) = rNew(i,j);
                     waveFunctionOld = waveFunctionNew;
@@ -70,16 +70,18 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
 }
 
 // Calculates greens function ratio. y and x are position matrices. n is particle number.
-double VMCSolverImportanceSampling::getGreensFunctionRatio(const mat &y, const mat &x, const mat &quantumForceNew, const mat &quantumForceOld, const int &n, const double & timeStep){
-    double argumentNew = 0;
-    double argumentOld = 0;
+double VMCSolverImportanceSampling::getGreensFunctionRatio(const mat &y, const mat &x, const mat &quantumForceNew, const mat &quantumForceOld, const double & timeStep){
+    double argument1 = 0;
+    double argument2 = 0;
     double argumentSum = 0;
     double greensFunctionRatio = 0;
-    for (int i = 0; i < nDimensions; i++){
-        argumentNew += (y(n,i) - x(n,i) - 0.5*timeStep*quantumForceOld(n,i))*(y(n,i) - x(n,i) - 0.5*timeStep*quantumForceOld(n,i));
-        argumentOld += (x(n,i) - y(n,i) - 0.5*timeStep*quantumForceNew(n,i))*(x(n,i) - y(n,i) - 0.5*timeStep*quantumForceNew(n,i));
+    for (int i = 0; i < nParticles; i++){
+        for (int j = 0; j < nDimensions; j++){
+            argument1 += (y(i,j) - x(i,j) - 0.5*timeStep*quantumForceOld(i,j))*(y(i,j) - x(i,j) - 0.5*timeStep*quantumForceOld(i,j));
+            argument2 += (x(i,j) - y(i,j) - 0.5*timeStep*quantumForceNew(i,j))*(x(i,j) - y(i,j) - 0.5*timeStep*quantumForceNew(i,j));
+        }
     }
-    argumentSum = (- argumentNew + argumentOld)/(2*timeStep);
+    argumentSum = (argument1 - argument2)/(2*timeStep);
     greensFunctionRatio = exp(argumentSum)/pow(2*M_PI*timeStep, 3*nParticles/2);
     return greensFunctionRatio;
 }

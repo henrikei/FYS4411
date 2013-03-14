@@ -6,7 +6,7 @@ VMCSolver::VMCSolver() :
     charge(2),
     h(0.001),
     idum(-time(NULL)),
-    nCycles(100000)
+    nCycles(10000)
 {
 }
 
