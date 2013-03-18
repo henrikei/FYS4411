@@ -25,7 +25,16 @@ int waveFunction::getNDimensions(){
     return nDimensions;
 }
 
-mat waveFunction::getQuantumForce(const mat &r){
+void waveFunction::update(const mat &r){
+}
+
+double waveFunction::getValue(const mat &r){
+}
+
+double waveFunction::getRatio(const int &particleNum, const mat &r){
+}
+
+mat waveFunction::getQuantumForceRatio(const mat &r){
     return r;
 }
 
@@ -49,4 +58,8 @@ double waveFunction::getLaplacian(const mat &r, const double &h){
 
     laplacian = laplacian/(h*h);
     return laplacian;
+}
+
+double waveFunction::getLaplaceRatio(const mat &r, const double &h){
+    return getLaplacian(r, h)/getValue(r);
 }

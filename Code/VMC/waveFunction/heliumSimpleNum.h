@@ -7,7 +7,6 @@ class heliumSimpleNum: public waveFunction
 {
 public:
     heliumSimpleNum();
-    void setAlpha(const double);
     double getValue(const mat &);
 };
 

@@ -9,14 +9,15 @@ class Slater
 {
 public:
     Slater();
-    void setNParticles(const int &n);
+    Slater(const int &nPart, const double &alph);
     void update(const mat &R);
     double getRatio(const int &particleNum, const mat &R);
-    mat getQuantumForceRatio(const int &particleNum, const mat &R);
+    mat getQuantumForceRatio(const mat &R);
     double getLaplaceRatio(const mat &R);
 private:
     int nParticles;
     int nDimensions;
+    double alpha;
     Orbitals orbitals;
 
     mat slaterUp;

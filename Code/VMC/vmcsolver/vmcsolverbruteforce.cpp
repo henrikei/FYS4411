@@ -16,7 +16,7 @@ using namespace std;
 
 VMCSolverBruteForce::VMCSolverBruteForce() :
     stepLength(0),
-    nDummyCycles(1000)
+    nDummyCycles(10000)
 {
 }
 
@@ -75,13 +75,6 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
     }
 
 
-
-
-    /////////// Testing Slater Class ///////////////
-    Slater slater;
-    slater.update(rNew);
-
-
     // actual Monte Carlo loop
     for(int cycle = 0; cycle < nCycles; cycle++) {
 
@@ -97,18 +90,12 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
             // Recalculate the value of the wave function
             waveFunctionNew = wf->getValue(rNew);
 
-
-            cout << "Old ratio: " << waveFunctionNew*waveFunctionNew/(waveFunctionOld*waveFunctionOld) << "  " << endl;
-            cout << "New ratio: " << slater.getRatio(i,rNew)*slater.getRatio(i,rNew) << endl;
-
-
             // Check for step acceptance (if yes, update position, if no, reset position)
             if(ran2(&idum) <= (waveFunctionNew*waveFunctionNew) / (waveFunctionOld*waveFunctionOld)) {
                 for(int j = 0; j < nDimensions; j++) {
                     rOld(i,j) = rNew(i,j);
                     waveFunctionOld = waveFunctionNew;                    
                 }
-                slater.update(rNew);
             } else {
                 for(int j = 0; j < nDimensions; j++) {
                     rNew(i,j) = rOld(i,j);

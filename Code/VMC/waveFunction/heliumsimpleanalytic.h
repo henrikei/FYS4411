@@ -9,7 +9,7 @@ class heliumSimpleAnalytic: public waveFunction
 public:
     heliumSimpleAnalytic();
     double getValue (const mat &r);
-    mat getQuantumForce(const mat &r);
+    mat getQuantumForceRatio(const mat &r);
     double getLaplacian (const mat &, const double &);
 };
 

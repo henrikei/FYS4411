@@ -10,6 +10,7 @@ class Orbitals
 {
 public:
     Orbitals();
+    Orbitals(const int &nPart, const double &alph);
     void setNumParticles(const int &nPart);
     double getValue(const int &particleNum, const int &quantumNum, const mat &R);
     rowvec3 getGradient(const int &particleNum, const int &quantumNum, const mat &R);
@@ -18,9 +19,7 @@ private:
     int nParticles;
     int nDimensions;
     double alpha;
-    double value;
     rowvec3 gradient;
-    double laplacian;
 };
 
 #endif // ORBITALS_H

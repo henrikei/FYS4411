@@ -10,9 +10,7 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
 {
     rOld = zeros<mat>(nParticles, nDimensions);
     rNew = zeros<mat>(nParticles, nDimensions);
-
-    double waveFunctionOld = 0;
-    double waveFunctionNew = 0;
+    double ratio2 = 0;
 
     mat quantumForceOld = zeros(nParticles, nDimensions);
     mat quantumForceNew = zeros(nParticles, nDimensions);
@@ -30,12 +28,11 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
     }
     rNew = rOld;
 
+    wf->update(rOld);
+    quantumForceOld = wf->getQuantumForceRatio(rOld);
+
     // Monte Carlo loop
     for(int cycle = 0; cycle < nCycles; cycle++) {
-
-        // Store the current value of the wave function and quantum force
-        waveFunctionOld = wf->getValue(rOld);
-        quantumForceOld = wf->getQuantumForce(rOld);
 
         // New position to test
         for(int i = 0; i < nParticles; i++) {
@@ -43,21 +40,25 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
                 rNew(i,j) = rOld(i,j) + randn()*sqrt(timeStep) + 0.5*quantumForceOld(i,j)*timeStep;
             }
 
-            // Recalculate the value of the wave function and quantum force
-            waveFunctionNew = wf->getValue(rNew);
-            quantumForceNew = wf->getQuantumForce(rNew);
+            // Calculate slater-ratio and quantum force-ratio
+            ratio2 = wf->getRatio(i, rNew);
+            ratio2 *= ratio2;
+            wf->update(rNew);
+            quantumForceNew = wf->getQuantumForceRatio(rNew);
 
             // Check for step acceptance (if yes, update position and quantum force, if no, reset position)
-            if(ran2(&idum) <= (getGreensFunctionRatio(rNew, rOld, quantumForceNew, quantumForceOld, timeStep)*waveFunctionNew*waveFunctionNew) / (waveFunctionOld*waveFunctionOld)) {
+            if(ran2(&idum) <= (getGreensFunctionRatio(rNew, rOld, quantumForceNew, quantumForceOld)*ratio2)){
                 for(int j = 0; j < nDimensions; j++) {
                     rOld(i,j) = rNew(i,j);
-                    waveFunctionOld = waveFunctionNew;
-                    quantumForceOld = quantumForceNew;
+                    //waveFunctionOld = waveFunctionNew;
+                    //quantumForceOld = quantumForceNew;
                 }
+                quantumForceOld = quantumForceNew;
             } else {
                 for(int j = 0; j < nDimensions; j++) {
                     rNew(i,j) = rOld(i,j);
                 }
+                wf->update(rOld);
             }
             // update energies
             deltaE = localE.getValue(rNew, wf, h, charge);
@@ -70,7 +71,7 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
 }
 
 // Calculates greens function ratio. y and x are position matrices. n is particle number.
-double VMCSolverImportanceSampling::getGreensFunctionRatio(const mat &y, const mat &x, const mat &quantumForceNew, const mat &quantumForceOld, const double & timeStep){
+double VMCSolverImportanceSampling::getGreensFunctionRatio(const mat &y, const mat &x, const mat &quantumForceNew, const mat &quantumForceOld){
     double argument1 = 0;
     double argument2 = 0;
     double argumentSum = 0;
@@ -82,11 +83,6 @@ double VMCSolverImportanceSampling::getGreensFunctionRatio(const mat &y, const m
         }
     }
     argumentSum = (argument1 - argument2)/(2*timeStep);
-    greensFunctionRatio = exp(argumentSum)/pow(2*M_PI*timeStep, 3*nParticles/2);
+    greensFunctionRatio = exp(argumentSum);
     return greensFunctionRatio;
 }
-
-
-
-
-

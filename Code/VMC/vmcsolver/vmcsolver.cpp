@@ -3,10 +3,10 @@
 VMCSolver::VMCSolver() :
     nParticles(-1),
     nDimensions(-1),
-    charge(2),
+    charge(4),
     h(0.001),
     idum(-time(NULL)),
-    nCycles(10000)
+    nCycles(100000)
 {
 }
 

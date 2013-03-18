@@ -22,7 +22,7 @@ double heliumSimpleAnalytic::getValue (const mat &r){
     return exp(-argument*alpha);
 }
 
-mat heliumSimpleAnalytic::getQuantumForce (const mat &r){
+mat heliumSimpleAnalytic::getQuantumForceRatio (const mat &r){
     double rSingleParticle = 0;
     for (int i = 0; i < nParticles; i++){
         rSingleParticle = 0;

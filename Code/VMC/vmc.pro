@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     vmcsolver/vmcsolverimportancesampling.cpp \
     orbitals/orbitals.cpp \
     Slater/slater.cpp \
-    waveFunction/berylliumsimplenum.cpp
+    waveFunction/berylliumsimplenum.cpp \
+    waveFunction/wfgeneral.cpp
 
 HEADERS += \
     lib.h \
@@ -32,7 +33,8 @@ HEADERS += \
     vmcsolver/vmcsolverimportancesampling.h \
     orbitals/orbitals.h \
     Slater/slater.h \
-    waveFunction/berylliumsimplenum.h
+    waveFunction/berylliumsimplenum.h \
+    waveFunction/wfgeneral.h
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3

@@ -8,7 +8,7 @@ class heliumJastrowAnalytic :public waveFunction
 public:
     heliumJastrowAnalytic();
     double getValue (const mat &);
-    mat getQuantumForce (const mat &r);
+    mat getQuantumForceRatio (const mat &r);
     double getLaplacian (const mat &, const double &);
 };
 

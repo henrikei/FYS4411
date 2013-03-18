@@ -2,6 +2,7 @@
 #define WAVEFUNCTION_H
 
 #include <armadillo>
+#include "Slater/slater.h"
 
 using namespace arma;
 
@@ -9,13 +10,16 @@ class waveFunction
 {
 public:
     waveFunction();
-    void setAlpha (const double &);
-    void setBeta (const double &);
+    void setAlpha (const double &a);
+    void setBeta (const double &a);
     int getNParticles();
     int getNDimensions();
-    virtual double getValue(const mat &r)=0;
-    virtual mat getQuantumForce(const mat &r);
-    virtual double getLaplacian(const mat &r, const double &);
+    virtual void update(const mat &r);
+    virtual double getValue(const mat &r);
+    virtual double getRatio(const int &particleNum, const mat &r);
+    virtual mat getQuantumForceRatio(const mat &r);
+    virtual double getLaplacian(const mat &r, const double &h);
+    virtual double getLaplaceRatio(const mat &r, const double &h);
 protected:
     double alpha;
     double beta;

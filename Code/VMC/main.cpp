@@ -7,6 +7,7 @@
 #include "waveFunction/heliumJastrowNum.h"
 #include "waveFunction/heliumjastrowanalytic.h"
 #include "waveFunction/berylliumsimplenum.h"
+#include "waveFunction/wfgeneral.h"
 #include "localenergy/localEnergy.h"
 #include "orbitals/orbitals.h"
 
@@ -19,8 +20,8 @@ using namespace std;
 
 int main()
 {
-    VMCSolver *solver = new VMCSolverBruteForce();
-    heliumSimpleAnalytic *wf = new heliumSimpleAnalytic();
+    VMCSolver *solver = new VMCSolverImportanceSampling();
+    waveFunction *wf = new wfGeneral(4, 4);
     localEnergy localE;
     wf->setAlpha(2);
     wf->setBeta(0.36);

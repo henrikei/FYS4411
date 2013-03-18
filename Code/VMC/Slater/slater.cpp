@@ -2,24 +2,23 @@
 
 Slater::Slater()
 {
-    nParticles = 2;
-    nDimensions = 3;
+}
 
-    Orbitals orbitals;
-    orbitals.setNumParticles(nParticles);
+Slater::Slater(const int &nPart, const double &alph)
+{
+    nParticles = nPart;
+    nDimensions = 3;
+    alpha = alph;
 
     slaterUp = zeros(nParticles/2, nParticles/2);
     slaterDown = zeros(nParticles/2, nParticles/2);
     invSlaterUp = zeros(nParticles/2, nParticles/2);
     invSlaterDown = zeros(nParticles/2, nParticles/2);
-}
 
-void Slater::setNParticles(const int &n){
-    nParticles = n;
+    orbitals = Orbitals(nParticles, alpha);
 }
 
 void Slater::update(const mat &R){
-
     for (int i = 0; i < nParticles/2; i++){
         for (int j = 0; j < nParticles/2; j++){
             slaterUp(i,j) = orbitals.getValue(i, j, R);
@@ -47,15 +46,15 @@ double Slater::getRatio(const int &particleNum, const mat &R){
 }
 
 
-mat Slater::getQuantumForceRatio(const int &particleNum, const mat &R){
+mat Slater::getQuantumForceRatio(const mat &R){
     quantumForceRatio = zeros(nParticles, nDimensions);
     for (int i = 0; i < nParticles/2; i++){
         for (int j = 0; j < nParticles/2; j++){
-            quantumForceRatio.row(i) = orbitals.getGradient(i, j, R)*invSlaterUp(j, i);
-            quantumForceRatio.row(i + nParticles/2) = orbitals.getGradient(i + nParticles/2, j, R)*invSlaterDown(j, i);
+            quantumForceRatio.row(i) += orbitals.getGradient(i, j, R)*invSlaterUp(j, i);
+            quantumForceRatio.row(i + nParticles/2) += orbitals.getGradient(i + nParticles/2, j, R)*invSlaterDown(j, i);
         }
     }
-    quantumForceRatio = quantumForceRatio/getRatio(particleNum, R);
+    quantumForceRatio = 2*quantumForceRatio; //getRatio(particleNum, R);
     return quantumForceRatio;
 }
 

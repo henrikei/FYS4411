@@ -32,7 +32,7 @@ double heliumJastrowAnalytic::getValue(const mat &r){
     return exp(-argument1 + argument2);
 }
 
-mat heliumJastrowAnalytic::getQuantumForce(const mat &r){
+mat heliumJastrowAnalytic::getQuantumForceRatio(const mat &r){
     double rSingleParticle = 0;
     double r12 = 0;
     for (int i = 0; i < nParticles; i++){

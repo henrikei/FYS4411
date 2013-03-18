@@ -2,12 +2,14 @@
 
 Orbitals::Orbitals()
 {
-    nParticles = -1;
+}
+
+Orbitals::Orbitals(const int &nPart, const double &alph)
+{
+    nParticles = nPart;
     nDimensions = 3;
-    alpha = 2;
-    value = 0;
+    alpha = alph;
     gradient = zeros<rowvec>(nDimensions);
-    laplacian = 0;
 }
 
 void Orbitals::setNumParticles(const int &nPart){
@@ -16,6 +18,7 @@ void Orbitals::setNumParticles(const int &nPart){
 
 double Orbitals::getValue(const int &particleNum, const int &quantumNum, const mat &R){
     double rSingleParticle = 0;
+    double value = 0;
     for (int i = 0; i < nDimensions; i++){
         rSingleParticle += R(particleNum, i)*R(particleNum, i);
     }
@@ -69,6 +72,7 @@ rowvec3 Orbitals::getGradient(const int &particleNum, const int &quantumNum, con
 
 double Orbitals::getLaplacian(const int &particleNum, const int &quantumNum, const mat &R){
     double rSingleParticle = 0;
+    double laplacian = 0;
     for (int i = 0; i < nDimensions; i++){
         rSingleParticle += R(particleNum, i)*R(particleNum, i);
     }
