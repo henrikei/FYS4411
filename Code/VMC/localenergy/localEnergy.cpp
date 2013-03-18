@@ -25,14 +25,14 @@ double localEnergy::getValue(const mat &r, waveFunction *wf,const double &h, con
     }
 
     // Contribution from electron-electron interactions
-//    for (int i = 0; i < nParticles; i++){
-//        for (int j = i + 1; j < nParticles; j++){
-//            r12 = 0;
-//            for (int k = 0; k < nDimensions; k++){
-//                r12 += (r(i,k) - r(j,k))*(r(i,k) - r(j,k));
-//            }
-//            potentialEnergy += 1/sqrt(r12);
-//        }
-//    }
+    for (int i = 0; i < nParticles; i++){
+        for (int j = i + 1; j < nParticles; j++){
+            r12 = 0;
+            for (int k = 0; k < nDimensions; k++){
+                r12 += (r(i,k) - r(j,k))*(r(i,k) - r(j,k));
+            }
+            potentialEnergy += 1/sqrt(r12);
+        }
+    }
     return (kineticEnergy + potentialEnergy);
 }

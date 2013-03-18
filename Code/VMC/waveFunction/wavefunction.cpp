@@ -31,7 +31,7 @@ void waveFunction::update(const mat &r){
 double waveFunction::getValue(const mat &r){
 }
 
-double waveFunction::getRatio(const int &particleNum, const mat &r){
+double waveFunction::getRatio(const int &particleNum, const mat &rNew, const mat &rOld){
 }
 
 mat waveFunction::getQuantumForceRatio(const mat &r){

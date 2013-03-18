@@ -9,6 +9,7 @@ class VMCSolver
 {
 public:
     VMCSolver();
+    void setCharge(const int &charg);
     void setWaveFunction(waveFunction *w);
     void setLocalEnergy(const localEnergy &);
     double getEnergy();

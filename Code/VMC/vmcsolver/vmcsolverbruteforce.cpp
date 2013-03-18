@@ -14,10 +14,11 @@
 using namespace arma;
 using namespace std;
 
-VMCSolverBruteForce::VMCSolverBruteForce() :
-    stepLength(0),
-    nDummyCycles(10000)
+VMCSolverBruteForce::VMCSolverBruteForce(const int &charg)
 {
+    stepLength = 0;
+    nDummyCycles = 10000;
+    charge = charg;
 }
 
 void VMCSolverBruteForce::runMonteCarloIntegration()

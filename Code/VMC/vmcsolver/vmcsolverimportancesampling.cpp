@@ -1,9 +1,10 @@
 #include "vmcsolverimportancesampling.h"
 #include "lib.h"
 
-VMCSolverImportanceSampling::VMCSolverImportanceSampling() :
-    timeStep(0.01)
+VMCSolverImportanceSampling::VMCSolverImportanceSampling(const int &charg)
 {
+    timeStep = 0.01;
+    charge = charg;
 }
 
 void VMCSolverImportanceSampling::runMonteCarloIntegration()
@@ -32,7 +33,7 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
     quantumForceOld = wf->getQuantumForceRatio(rOld);
 
     // Monte Carlo loop
-    for(int cycle = 0; cycle < nCycles; cycle++) {
+    for(int cycle = 0; cycle < nCycles; cycle++){
 
         // New position to test
         for(int i = 0; i < nParticles; i++) {
@@ -41,7 +42,7 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
             }
 
             // Calculate slater-ratio and quantum force-ratio
-            ratio2 = wf->getRatio(i, rNew);
+            ratio2 = wf->getRatio(i, rNew, rOld);
             ratio2 *= ratio2;
             wf->update(rNew);
             quantumForceNew = wf->getQuantumForceRatio(rNew);
@@ -50,8 +51,6 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
             if(ran2(&idum) <= (getGreensFunctionRatio(rNew, rOld, quantumForceNew, quantumForceOld)*ratio2)){
                 for(int j = 0; j < nDimensions; j++) {
                     rOld(i,j) = rNew(i,j);
-                    //waveFunctionOld = waveFunctionNew;
-                    //quantumForceOld = quantumForceNew;
                 }
                 quantumForceOld = quantumForceNew;
             } else {

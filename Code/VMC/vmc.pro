@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     orbitals/orbitals.cpp \
     Slater/slater.cpp \
     waveFunction/berylliumsimplenum.cpp \
-    waveFunction/wfgeneral.cpp
+    waveFunction/wfgeneral.cpp \
+    Jastrow/jastrow.cpp
 
 HEADERS += \
     lib.h \
@@ -34,7 +35,8 @@ HEADERS += \
     orbitals/orbitals.h \
     Slater/slater.h \
     waveFunction/berylliumsimplenum.h \
-    waveFunction/wfgeneral.h
+    waveFunction/wfgeneral.h \
+    Jastrow/jastrow.h
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3

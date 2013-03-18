@@ -18,6 +18,11 @@ Slater::Slater(const int &nPart, const double &alph)
     orbitals = Orbitals(nParticles, alpha);
 }
 
+void Slater::setAlpha(const double &a){
+    alpha = a;
+    orbitals.setAlpha(alpha);
+}
+
 void Slater::update(const mat &R){
     for (int i = 0; i < nParticles/2; i++){
         for (int j = 0; j < nParticles/2; j++){

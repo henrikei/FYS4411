@@ -1,19 +1,20 @@
 #include "orbitals.h"
 
+
 Orbitals::Orbitals()
 {
 }
 
-Orbitals::Orbitals(const int &nPart, const double &alph)
+Orbitals::Orbitals(const int &nPart, const double &a)
 {
     nParticles = nPart;
     nDimensions = 3;
-    alpha = alph;
+    alpha = a;
     gradient = zeros<rowvec>(nDimensions);
 }
 
-void Orbitals::setNumParticles(const int &nPart){
-    nParticles = nPart;
+void Orbitals::setAlpha(const double &a){
+    alpha = a;
 }
 
 double Orbitals::getValue(const int &particleNum, const int &quantumNum, const mat &R){

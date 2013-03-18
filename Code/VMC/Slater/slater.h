@@ -10,6 +10,7 @@ class Slater
 public:
     Slater();
     Slater(const int &nPart, const double &alph);
+    void setAlpha(const double &a);
     void update(const mat &R);
     double getRatio(const int &particleNum, const mat &R);
     mat getQuantumForceRatio(const mat &R);
