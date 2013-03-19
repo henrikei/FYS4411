@@ -1,20 +1,27 @@
 #include "wavefunction.h"
 
-waveFunction::waveFunction():
-    alpha(128),
-    beta(247),
-    nParticles(-1),
-    nDimensions(-1),
-    quantumForce(zeros(2,2))
+waveFunction::waveFunction(const int &nPart, const double &a, const double &b, const int &jas)
 {
+    nParticles = nPart;
+    alpha = a;
+    beta = b;
+    nDimensions = 3;
+    slater = Slater(nParticles, alpha);
+    if (jas == 0){
+        jastrow = new Jastrow(nParticles, beta);
+    } else {
+        jastrow = new NoJastrow(nParticles);
+    }
 }
 
 void waveFunction::setAlpha(const double &a){
     alpha = a;
+    slater.setAlpha(alpha);
 }
 
 void waveFunction::setBeta(const double &b){
     beta = b;
+    jastrow->setBeta(beta);
 }
 
 int waveFunction::getNParticles(){
@@ -26,40 +33,26 @@ int waveFunction::getNDimensions(){
 }
 
 void waveFunction::update(const mat &r){
-}
-
-double waveFunction::getValue(const mat &r){
+    slater.update(r);
+    gradientRatioSD = slater.getGradientRatio(r);
+    gradientRatioJ = jastrow->getGradientRatio(r);
 }
 
 double waveFunction::getRatio(const int &particleNum, const mat &rNew, const mat &rOld){
+    return slater.getRatio(particleNum, rNew)*jastrow->getRatio(particleNum, rNew, rOld);
 }
 
-mat waveFunction::getQuantumForceRatio(const mat &r){
-    return r;
+mat waveFunction::getQuantumForceRatio(){
+    return 2*(gradientRatioSD + gradientRatioJ);
 }
 
-double waveFunction::getLaplacian(const mat &r, const double &h){
-    double laplacian = 0;
-    mat rPlus = r;
-    mat rMinus = r;
-    int nParticles = r.n_rows;
-    int nDimensions = r.n_cols;
+double waveFunction::getLaplaceRatio(const mat &r){
+    double value = 0;
     for (int i = 0; i < nParticles; i++){
-        for (int j = 0; j < nDimensions; j++){
-            rPlus(i, j) = r(i,j) + h;
-            rMinus(i, j) = r(i,j) - h;
-
-            laplacian += (getValue(rPlus) - 2*getValue(r) + getValue(rMinus));
-
-            rPlus(i, j) = r(i, j);
-            rMinus(i, j) = r(i, j);
-        }
+        value += (gradientRatioSD(i,0)*gradientRatioJ(i,0) + gradientRatioSD(i,1)*gradientRatioJ(i,1)
+                    + gradientRatioSD(i,2)*gradientRatioJ(i,2));
     }
-
-    laplacian = laplacian/(h*h);
-    return laplacian;
-}
-
-double waveFunction::getLaplaceRatio(const mat &r, const double &h){
-    return getLaplacian(r, h)/getValue(r);
+    value *= 2;
+    value += slater.getLaplaceRatio(r) + jastrow->getLaplaceRatio(r);
+    return value;
 }

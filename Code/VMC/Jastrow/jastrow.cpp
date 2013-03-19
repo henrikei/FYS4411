@@ -11,6 +11,10 @@ Jastrow::Jastrow(const int &nPart, const double &b)
     beta = b;
 }
 
+void Jastrow::setBeta(const double &b){
+    beta = b;
+}
+
 double Jastrow::getRatio(const int &particleNum, const mat &rNew, const mat &rOld){
     double argument = 0;
     double fNew = 0;
@@ -42,20 +46,20 @@ double Jastrow::getRatio(const int &particleNum, const mat &rNew, const mat &rOl
 }
 
 mat Jastrow::getGradientRatio(const mat &r){
-    quantumForceRatio = zeros(nParticles, nDimensions);
+    gradientRatio = zeros(nParticles, nDimensions);
     for (int k = 0; k < nParticles; k++){
         for (int i = 0; i < k; i++){
             r12Vec = r.row(k) - r.row(i);
             double r12 = sqrt(r12Vec(0)*r12Vec(0) + r12Vec(1)*r12Vec(1) + r12Vec(2)*r12Vec(2));
-            quantumForceRatio.row(k) += r12Vec*dfdr(r12, k, i)/r12;
+            gradientRatio.row(k) += r12Vec*dfdr(r12, k, i)/r12;
         }
         for (int i = k + 1; i < nParticles; i++){
             r12Vec = r.row(i) - r.row(k);
             double r12 = sqrt(r12Vec(0)*r12Vec(0) + r12Vec(1)*r12Vec(1) + r12Vec(2)*r12Vec(2));
-            quantumForceRatio.row(k) -= r12Vec*dfdr(r12, k, i)/r12;
+            gradientRatio.row(k) -= r12Vec*dfdr(r12, k, i)/r12;
         }
     }
-    return quantumForceRatio;
+    return gradientRatio;
 }
 
 double Jastrow::getLaplaceRatio(const mat &r){
@@ -71,8 +75,8 @@ double Jastrow::getLaplaceRatio(const mat &r){
             double r12 = sqrt(r12Vec(0)*r12Vec(0) + r12Vec(1)*r12Vec(1) + r12Vec(2)*r12Vec(2));
             laplaceRatio += (nDimensions - 1)*dfdr(r12, k, i)/r12 + d2fdr2(r12, k, i);
         }
-        laplaceRatio += quantumForceRatio(k,0)*quantumForceRatio(k,0) + quantumForceRatio(k,1)*quantumForceRatio(k,1)
-                        + quantumForceRatio(k,2)*quantumForceRatio(k,2);
+        laplaceRatio += gradientRatio(k,0)*gradientRatio(k,0) + gradientRatio(k,1)*gradientRatio(k,1)
+                        + gradientRatio(k,2)*gradientRatio(k,2);
     }
     return laplaceRatio;
 }

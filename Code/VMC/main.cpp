@@ -2,12 +2,6 @@
 #include "vmcsolver/vmcsolverbruteforce.h"
 #include "vmcsolver/vmcsolverimportancesampling.h"
 #include "waveFunction/wavefunction.h"
-#include "waveFunction/heliumSimpleNum.h"
-#include "waveFunction/heliumsimpleanalytic.h"
-#include "waveFunction/heliumJastrowNum.h"
-#include "waveFunction/heliumjastrowanalytic.h"
-#include "waveFunction/berylliumsimplenum.h"
-#include "waveFunction/wfgeneral.h"
 #include "localenergy/localEnergy.h"
 #include "orbitals/orbitals.h"
 #include "Jastrow/jastrow.h"
@@ -22,7 +16,7 @@ using namespace std;
 int main()
 {
     VMCSolver *solver = new VMCSolverImportanceSampling(10);
-    waveFunction *wf = new wfGeneral(10, 9.2, 0.5);
+    waveFunction *wf = new waveFunction(10, 10, 0.177, 0);
     localEnergy localE;
     solver->setWaveFunction(wf);
     solver->setLocalEnergy(localE);

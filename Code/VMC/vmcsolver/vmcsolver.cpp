@@ -6,7 +6,8 @@ VMCSolver::VMCSolver() :
     charge(-1),
     h(0.01),
     idum(-time(NULL)),
-    nCycles(100000)
+    nCycles(100000),
+    thermalization(nCycles/10)
 {
 }
 

@@ -5,9 +5,9 @@ localEnergy::localEnergy()
 {
 }
 
-double localEnergy::getValue(const mat &r, waveFunction *wf,const double &h, const double &charge){
+double localEnergy::getValue(const mat &r, waveFunction *wf, const double &charge){
 
-    double kineticEnergy = -0.5*wf->getLaplaceRatio(r, h);
+    double kineticEnergy = -0.5*wf->getLaplaceRatio(r);
 
     double potentialEnergy = 0;
     double rSingleParticle = 0;

@@ -3,7 +3,7 @@
 
 VMCSolverImportanceSampling::VMCSolverImportanceSampling(const int &charg)
 {
-    timeStep = 0.001;
+    timeStep = 0.005;
     charge = charg;
 }
 
@@ -30,10 +30,10 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
     rNew = rOld;
 
     wf->update(rOld);
-    quantumForceOld = wf->getQuantumForceRatio(rOld);
+    quantumForceOld = wf->getQuantumForceRatio();
 
     // Monte Carlo loop
-    for(int cycle = 0; cycle < nCycles; cycle++){
+    for(int cycle = 0; cycle < (nCycles + thermalization); cycle++){
 
         // New position to test
         for(int i = 0; i < nParticles; i++) {
@@ -45,7 +45,7 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
             ratio2 = wf->getRatio(i, rNew, rOld);
             ratio2 *= ratio2;
             wf->update(rNew);
-            quantumForceNew = wf->getQuantumForceRatio(rNew);
+            quantumForceNew = wf->getQuantumForceRatio();
 
             // Check for step acceptance (if yes, update position and quantum force, if no, reset position)
             if(ran2(&idum) <= (getGreensFunctionRatio(rNew, rOld, quantumForceNew, quantumForceOld)*ratio2)){
@@ -60,9 +60,11 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
                 wf->update(rOld);
             }
             // update energies
-            deltaE = localE.getValue(rNew, wf, h, charge);
-            energySum += deltaE;
-            energySquaredSum += deltaE*deltaE;
+            if (cycle >= thermalization){
+                deltaE = localE.getValue(rNew, wf, charge);
+                energySum += deltaE;
+                energySquaredSum += deltaE*deltaE;
+            }
         }
     }
     energy = energySum/(nCycles * nParticles);

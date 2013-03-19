@@ -52,15 +52,15 @@ double Slater::getRatio(const int &particleNum, const mat &R){
 
 
 mat Slater::getGradientRatio(const mat &R){
-    quantumForceRatio = zeros(nParticles, nDimensions);
+    gradientRatio = zeros(nParticles, nDimensions);
     for (int i = 0; i < nParticles/2; i++){
         for (int j = 0; j < nParticles/2; j++){
-            quantumForceRatio.row(i) += orbitals.getGradient(i, j, R)*invSlaterUp(j, i);
-            quantumForceRatio.row(i + nParticles/2) += orbitals.getGradient(i + nParticles/2, j, R)*invSlaterDown(j, i);
+            gradientRatio.row(i) += orbitals.getGradient(i, j, R)*invSlaterUp(j, i);
+            gradientRatio.row(i + nParticles/2) += orbitals.getGradient(i + nParticles/2, j, R)*invSlaterDown(j, i);
         }
     }
-    quantumForceRatio = quantumForceRatio;
-    return quantumForceRatio;
+    gradientRatio = gradientRatio;
+    return gradientRatio;
 }
 
 

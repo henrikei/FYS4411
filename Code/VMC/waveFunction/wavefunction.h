@@ -4,29 +4,31 @@
 #include <armadillo>
 #include "Slater/slater.h"
 #include "Jastrow/jastrow.h"
+#include "Jastrow/nojastrow.h"
 
 using namespace arma;
 
 class waveFunction
 {
 public:
-    waveFunction();
-    virtual void setAlpha (const double &a);
-    virtual void setBeta (const double &a);
+    waveFunction(const int &nPart, const double &a, const double &b, const int &jas);
+    void setAlpha (const double &a);
+    void setBeta (const double &a);
     int getNParticles();
     int getNDimensions();
-    virtual void update(const mat &r);
-    virtual double getValue(const mat &r);
-    virtual double getRatio(const int &particleNum, const mat &rNew, const mat &rOld);
-    virtual mat getQuantumForceRatio(const mat &r);
-    virtual double getLaplacian(const mat &r, const double &h);
-    virtual double getLaplaceRatio(const mat &r, const double &h);
+    void update(const mat &r);
+    double getRatio(const int &particleNum, const mat &rNew, const mat &rOld);
+    mat getQuantumForceRatio();
+    double getLaplaceRatio(const mat &r);
 protected:
     double alpha;
     double beta;
     int nParticles;
     int nDimensions;
-    mat quantumForce;
+    Slater slater;
+    Jastrow *jastrow;
+    mat gradientRatioSD;
+    mat gradientRatioJ;
 };
 
 #endif // WAVEFUNCTION_H

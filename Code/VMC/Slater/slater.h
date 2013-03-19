@@ -26,7 +26,7 @@ private:
     mat invSlaterUp;
     mat invSlaterDown;
 
-    mat quantumForceRatio;
+    mat gradientRatio;
 };
 
 #endif // SLATER_H

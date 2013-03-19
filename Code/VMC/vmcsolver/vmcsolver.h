@@ -33,6 +33,7 @@ protected:
     double beta;
 
     int nCycles;
+    int thermalization;
 
     mat rOld;
     mat rNew;

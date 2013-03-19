@@ -1,8 +1,6 @@
 #include "vmcsolverbruteforce.h"
 #include "lib.h"
 #include "waveFunction/wavefunction.h"
-#include "waveFunction/heliumSimpleNum.h"
-#include "waveFunction/heliumJastrowNum.h"
 #include "localenergy/localEnergy.h"
 #include "Slater/slater.h"
 #include "orbitals/orbitals.h"
@@ -17,7 +15,7 @@ using namespace std;
 VMCSolverBruteForce::VMCSolverBruteForce(const int &charg)
 {
     stepLength = 0;
-    nDummyCycles = 10000;
+    nDummyCycles = 1000;
     charge = charg;
 }
 
@@ -26,8 +24,7 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
     rOld = zeros<mat>(nParticles, nDimensions);
     rNew = zeros<mat>(nParticles, nDimensions);
 
-    double waveFunctionOld = 0;
-    double waveFunctionNew = 0;
+    double ratio2 = 0;
 
     double energySum = 0;
     double energySquaredSum = 0;
@@ -44,8 +41,7 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
     rNew = rOld;
 
     // Store the current value of the wave function
-    waveFunctionOld = wf->getValue(rOld);
-
+    wf->update(rOld);
 
     // trial Monte Carlo loop to achieve acceptance rate of approximately 0.5
     stepLength = 0;
@@ -58,12 +54,13 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
                 for (int j = 0; j < nDimensions; j++){
                     rNew(i,j) = rOld(i,j) + stepLength*(ran2(&idum) - 0.5);
                 }
-                waveFunctionNew = wf->getValue(rNew);
-                if (ran2(&idum) < (waveFunctionNew*waveFunctionNew/(waveFunctionOld*waveFunctionOld))){
+                ratio2 = wf->getRatio(i, rNew, rOld);
+                ratio2 *= ratio2;
+                if (ran2(&idum) < ratio2){
                     for (int j = 0; j < nDimensions; j++){
                         rOld(i,j) = rNew(i,j);
                     }
-                    waveFunctionOld = waveFunctionNew;
+                    wf->update(rNew);
                     acceptCount += 1;
                 } else {
                     for (int j = 0; j < nDimensions; j++){
@@ -75,12 +72,11 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
         acceptRate = (double) acceptCount/(nDummyCycles*nParticles);
     }
 
-
     // actual Monte Carlo loop
-    for(int cycle = 0; cycle < nCycles; cycle++) {
+    for(int cycle = 0; cycle < (nCycles + thermalization); cycle++) {
 
         // Store the current value of the wave function
-        waveFunctionOld = wf->getValue(rOld);
+        wf->update(rOld);
 
         // New position to test
         for(int i = 0; i < nParticles; i++) {
@@ -89,23 +85,26 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
             }
 
             // Recalculate the value of the wave function
-            waveFunctionNew = wf->getValue(rNew);
+            ratio2 = wf->getRatio(i, rNew, rOld);
+            ratio2 *= ratio2;
 
             // Check for step acceptance (if yes, update position, if no, reset position)
-            if(ran2(&idum) <= (waveFunctionNew*waveFunctionNew) / (waveFunctionOld*waveFunctionOld)) {
+            if(ran2(&idum) <= ratio2) {
                 for(int j = 0; j < nDimensions; j++) {
                     rOld(i,j) = rNew(i,j);
-                    waveFunctionOld = waveFunctionNew;                    
                 }
+                wf->update(rNew);
             } else {
                 for(int j = 0; j < nDimensions; j++) {
                     rNew(i,j) = rOld(i,j);
                 }
             }
             // update energies
-            deltaE = localE.getValue(rNew, wf, h, charge);
-            energySum += deltaE;
-            energySquaredSum += deltaE*deltaE;
+            if (cycle >= thermalization){
+                deltaE = localE.getValue(rNew, wf, charge);
+                energySum += deltaE;
+                energySquaredSum += deltaE*deltaE;
+            }
         }
     }
     energy = energySum/(nCycles * nParticles);
