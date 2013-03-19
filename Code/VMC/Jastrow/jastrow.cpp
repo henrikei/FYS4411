@@ -41,7 +41,7 @@ double Jastrow::getRatio(const int &particleNum, const mat &rNew, const mat &rOl
     return exp(argument);
 }
 
-mat Jastrow::getQuantumForceRatio(const mat &r){
+mat Jastrow::getGradientRatio(const mat &r){
     quantumForceRatio = zeros(nParticles, nDimensions);
     for (int k = 0; k < nParticles; k++){
         for (int i = 0; i < k; i++){

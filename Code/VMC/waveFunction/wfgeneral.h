@@ -16,8 +16,8 @@ public:
 private:
     Slater slater;
     Jastrow jastrow;
-    mat quantumForceRatioSD;
-    mat quantumForceRatioJ;
+    mat gradientRatioSD;
+    mat gradientRatioJ;
 };
 
 #endif // WFGENERAL_H

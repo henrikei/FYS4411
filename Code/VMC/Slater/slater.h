@@ -13,7 +13,7 @@ public:
     void setAlpha(const double &a);
     void update(const mat &R);
     double getRatio(const int &particleNum, const mat &R);
-    mat getQuantumForceRatio(const mat &R);
+    mat getGradientRatio(const mat &R);
     double getLaplaceRatio(const mat &R);
 private:
     int nParticles;

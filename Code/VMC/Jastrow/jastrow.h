@@ -11,7 +11,7 @@ public:
     Jastrow();
     Jastrow(const int &nPart, const double &b);
     double getRatio(const int &particleNum, const mat &rNew, const mat &rOld);
-    mat getQuantumForceRatio(const mat &r);
+    mat getGradientRatio(const mat &r);
     double getLaplaceRatio(const mat &r);
 private:
     double f(const double &r12, const int &particleNum1, const int &particleNum2);

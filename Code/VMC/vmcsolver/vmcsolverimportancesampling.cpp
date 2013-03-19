@@ -3,7 +3,7 @@
 
 VMCSolverImportanceSampling::VMCSolverImportanceSampling(const int &charg)
 {
-    timeStep = 0.01;
+    timeStep = 0.001;
     charge = charg;
 }
 

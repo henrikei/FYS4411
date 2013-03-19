@@ -24,16 +24,16 @@ double wfGeneral::getRatio(const int &particleNum, const mat &rNew, const mat &r
 }
 
 mat wfGeneral::getQuantumForceRatio(const mat &r){
-    quantumForceRatioSD = slater.getQuantumForceRatio(r);
-    quantumForceRatioJ = jastrow.getQuantumForceRatio(r);
-    return quantumForceRatioSD + quantumForceRatioJ;
+    gradientRatioSD = slater.getGradientRatio(r);
+    gradientRatioJ = jastrow.getGradientRatio(r);
+    return 2*(gradientRatioSD + gradientRatioJ);
 }
 
 double wfGeneral::getLaplaceRatio(const mat &r, const double &h){
     double value = 0;
     for (int i = 0; i < nParticles; i++){
-        value += (quantumForceRatioSD(i,0)*quantumForceRatioJ(i,0) + quantumForceRatioSD(i,1)*quantumForceRatioJ(i,1)
-                    + quantumForceRatioSD(i,2)*quantumForceRatioJ(i,2));
+        value += (gradientRatioSD(i,0)*gradientRatioJ(i,0) + gradientRatioSD(i,1)*gradientRatioJ(i,1)
+                    + gradientRatioSD(i,2)*gradientRatioJ(i,2));
     }
     value *= 2;
     value += slater.getLaplaceRatio(r) + jastrow.getLaplaceRatio(r);

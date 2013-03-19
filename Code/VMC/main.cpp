@@ -21,24 +21,8 @@ using namespace std;
 
 int main()
 {
-//    Jastrow jastrow(4, 0.8);
-//    mat rNew = zeros(4,3);
-//    mat rOld = zeros(4,3);
-//    for (int i = 0; i < 4; i++){
-//        for (int j = 0; j < 3; j++){
-//            rNew(i,j) = 0.3 +i*j - j + 2*i;
-//            rOld(i,j) = 1.3 +0.2*i*j;
-//        }
-//    }
-//    cout << "rNew :" << rNew << endl;
-//    cout << "rOld :" << rOld << endl;
-//    jastrow.getQuantumForceRatio(rNew);
-//    cout << "quantumForceRatio: " << jastrow.getQuantumForceRatio(rNew) << endl;
-//    cout << "laplaceRatio: " << jastrow.getLaplaceRatio(rNew) << endl;
-
-
-    VMCSolver *solver = new VMCSolverImportanceSampling(4);
-    waveFunction *wf = new wfGeneral(4, 3.925, 0.109);
+    VMCSolver *solver = new VMCSolverImportanceSampling(10);
+    waveFunction *wf = new wfGeneral(10, 9.2, 0.5);
     localEnergy localE;
     solver->setWaveFunction(wf);
     solver->setLocalEnergy(localE);

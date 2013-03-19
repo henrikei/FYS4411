@@ -4,7 +4,7 @@ VMCSolver::VMCSolver() :
     nParticles(-1),
     nDimensions(-1),
     charge(-1),
-    h(0.001),
+    h(0.01),
     idum(-time(NULL)),
     nCycles(100000)
 {
