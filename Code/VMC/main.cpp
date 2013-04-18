@@ -16,7 +16,7 @@ using namespace std;
 int main()
 {
     VMCSolver *solver = new VMCSolverImportanceSampling(10);
-    waveFunction *wf = new waveFunction(10, 10, 0.177, 0);
+    waveFunction *wf = new waveFunction(10, 9.546, 0.177, 0);
     localEnergy localE;
     solver->setWaveFunction(wf);
     solver->setLocalEnergy(localE);
