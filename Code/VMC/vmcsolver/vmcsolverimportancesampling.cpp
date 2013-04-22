@@ -1,10 +1,9 @@
 #include "vmcsolverimportancesampling.h"
 #include "lib.h"
 
-VMCSolverImportanceSampling::VMCSolverImportanceSampling(const int &charg)
+VMCSolverImportanceSampling::VMCSolverImportanceSampling()
 {
     timeStep = 0.005;
-    charge = charg;
 }
 
 void VMCSolverImportanceSampling::runMonteCarloIntegration()
@@ -18,8 +17,16 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
 
     double energySum = 0;
     double energySquaredSum = 0;
-
     double deltaE;
+
+    double dPsidAlpha = 0;
+    double dPsidBeta = 0;
+    double alphaTerm1 = 0;
+    double alphaTerm2 = 0;
+    double betaTerm1 = 0;
+    double betaTerm2 = 0;
+
+    int acceptCount = 0;
 
     // initial trial positions
     for(int i = 0; i < nParticles; i++) {
@@ -53,6 +60,7 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
                     rOld(i,j) = rNew(i,j);
                 }
                 quantumForceOld = quantumForceNew;
+                acceptCount += 1;
             } else {
                 for(int j = 0; j < nDimensions; j++) {
                     rNew(i,j) = rOld(i,j);
@@ -61,14 +69,35 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
             }
             // update energies
             if (cycle >= thermalization){
-                deltaE = localE.getValue(rNew, wf, charge);
+                deltaE = localE->getValue(rNew, wf, charge);
                 energySum += deltaE;
                 energySquaredSum += deltaE*deltaE;
+
+                dPsidAlpha = wf->getAlphaDerivativeRatio(rNew);
+                alphaTerm1 += dPsidAlpha;
+                alphaTerm2 += deltaE*dPsidAlpha;
+
+                dPsidBeta = wf->getBetaDerivativeRatio(rNew);
+                betaTerm1 += dPsidBeta;
+                betaTerm2 += deltaE*dPsidBeta;
             }
         }
     }
     energy = energySum/(nCycles * nParticles);
     variance = energySquaredSum/(nCycles * nParticles) - energy*energy;
+
+    alphaTerm1 = alphaTerm1/(nCycles*nParticles);
+    alphaTerm2 = alphaTerm2/(nCycles*nParticles);
+
+    betaTerm1 = betaTerm1/(nCycles*nParticles);
+    betaTerm2 = betaTerm2/(nCycles*nParticles);
+
+    dEdAlpha = 2*(alphaTerm2 - alphaTerm1*energy);
+    dEdBeta = 2*(betaTerm2 - betaTerm1*energy);
+
+    cout << "Acceptance ratio: " << (double)acceptCount/((double)((nCycles + thermalization)*nParticles)) << endl;
+    cout << "dEdAlpha = " << dEdAlpha << endl;
+    cout << "dEdBeta = " << dEdBeta << endl;
 }
 
 // Calculates greens function ratio. y and x are position matrices. n is particle number.
@@ -86,4 +115,8 @@ double VMCSolverImportanceSampling::getGreensFunctionRatio(const mat &y, const m
     argumentSum = (argument1 - argument2)/(2*timeStep);
     greensFunctionRatio = exp(argumentSum);
     return greensFunctionRatio;
+}
+
+void VMCSolverImportanceSampling::setTimeStep(const double &dt){
+    timeStep = dt;
 }

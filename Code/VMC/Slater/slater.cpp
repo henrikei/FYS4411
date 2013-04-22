@@ -74,3 +74,15 @@ double Slater::getLaplaceRatio(const mat &R){
     }
     return value;
 }
+
+
+double Slater::getAlphaDerivativeRatio(const mat &R){
+    double value = 0;
+    for (int i = 0; i < nParticles/2; i++){
+        for (int j = 0; j < nParticles/2; j++){
+            value += orbitals.getAlphaDerivative(i, j, R)*invSlaterUp(j, i)
+                    + orbitals.getAlphaDerivative(i + nParticles/2, j, R)*invSlaterDown(j, i);
+        }
+    }
+    return value;
+}

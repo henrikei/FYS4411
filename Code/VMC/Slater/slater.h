@@ -15,6 +15,7 @@ public:
     double getRatio(const int &particleNum, const mat &R);
     mat getGradientRatio(const mat &R);
     double getLaplaceRatio(const mat &R);
+    double getAlphaDerivativeRatio(const mat &R);
 private:
     int nParticles;
     int nDimensions;

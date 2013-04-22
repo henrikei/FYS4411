@@ -93,3 +93,26 @@ double Orbitals::getLaplacian(const int &particleNum, const int &quantumNum, con
     }
     return laplacian;
 }
+
+double Orbitals::getAlphaDerivative(const int &particleNum, const int &quantumNum, const mat &R){
+    double rSingleParticle = 0;
+    double value = 0;
+    for (int i = 0; i < nDimensions; i++){
+        rSingleParticle += R(particleNum, i)*R(particleNum, i);
+    }
+    rSingleParticle = sqrt(rSingleParticle);
+
+    // calculating the derivative of the appropriate orbital
+    if (quantumNum == 0){
+        value = -rSingleParticle*exp(-alpha*rSingleParticle);
+    } else if (quantumNum == 1){
+        value = -rSingleParticle*(4 - alpha*rSingleParticle)*exp(-alpha*rSingleParticle/2)/4;
+    } else if (quantumNum == 2){
+        value = -0.5*R(particleNum,0)*rSingleParticle*exp(-alpha*rSingleParticle/2);
+    } else if (quantumNum == 3){
+        value = -0.5*R(particleNum,1)*rSingleParticle*exp(-alpha*rSingleParticle/2);
+    } else if (quantumNum == 4){
+        value = -0.5*R(particleNum,2)*rSingleParticle*exp(-alpha*rSingleParticle/2);
+    }
+    return value;
+}

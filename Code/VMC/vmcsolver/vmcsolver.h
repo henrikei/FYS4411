@@ -11,13 +11,15 @@ public:
     VMCSolver();
     void setCharge(const int &charg);
     void setWaveFunction(waveFunction *w);
-    void setLocalEnergy(const localEnergy &);
+    void setLocalEnergy(localEnergy *E);
     double getEnergy();
     double getVariance();
+    double getdEdAlpha();
+    double getdEdBeta();
     virtual void runMonteCarloIntegration()=0;
 protected:
     waveFunction *wf;
-    localEnergy localE;
+    localEnergy *localE;
 
     int nParticles;
     int nDimensions;
@@ -40,6 +42,9 @@ protected:
 
     double energy;
     double variance;
+
+    double dEdAlpha;
+    double dEdBeta;
 };
 
 #endif // VMCSOLVER_H

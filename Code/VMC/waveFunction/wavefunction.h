@@ -20,6 +20,8 @@ public:
     double getRatio(const int &particleNum, const mat &rNew, const mat &rOld);
     mat getQuantumForceRatio();
     double getLaplaceRatio(const mat &r);
+    double getAlphaDerivativeRatio(const mat &r);
+    double getBetaDerivativeRatio(const mat &r);
 protected:
     double alpha;
     double beta;

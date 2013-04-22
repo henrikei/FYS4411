@@ -81,32 +81,39 @@ double Jastrow::getLaplaceRatio(const mat &r){
     return laplaceRatio;
 }
 
-double Jastrow::f(const double &r12, const int &particleNum1, const int &particleNum2){
+double Jastrow::getBetaDerivativeRatio(const mat &r){
+    double value = 0;
+    for (int k = 0; k < nParticles; k++){
+        for (int i = 0; i < k; i++){
+            r12Vec = r.row(k) - r.row(i);
+            double r12 = sqrt(r12Vec(0)*r12Vec(0) + r12Vec(1)*r12Vec(1) + r12Vec(2)*r12Vec(2));
+            value -= aFactor(k,i)*r12*r12/((1 + beta*r12)*(1 + beta*r12));
+        }
+    }
+    return value;
+}
+
+
+// Gives the factor a in the Jastrow-function
+double Jastrow::aFactor(const int &particleNum1, const int &particleNum2){
     double a = 0;
     if (((particleNum1 < nParticles/2) && (particleNum2 < nParticles/2)) || ((particleNum1 >= nParticles/2) && (particleNum2 >= nParticles/2))){
         a = 0.25;
     } else {
         a = 0.50;
     }
-    return a*r12/(1 + beta*r12);
+    return a;
+}
+
+// f is the function in the exponential of the Jastrow-function
+double Jastrow::f(const double &r12, const int &particleNum1, const int &particleNum2){
+    return aFactor(particleNum1, particleNum2)*r12/(1 + beta*r12);
 }
 
 double Jastrow::dfdr(const double &r12, const int &particleNum1, const int &particleNum2){
-    double a = 0;
-    if (((particleNum1 < nParticles/2) && (particleNum2 < nParticles/2)) || ((particleNum1 >= nParticles/2) && (particleNum2 >= nParticles/2))){
-        a = 0.25;
-    } else {
-        a = 0.50;
-    }
-    return a/((1 + beta*r12)*(1 + beta*r12));
+    return aFactor(particleNum1, particleNum2)/((1 + beta*r12)*(1 + beta*r12));
 }
 
 double Jastrow::d2fdr2(const double &r12, const int &particleNum1, const int &particleNum2){
-    double a = 0;
-    if (((particleNum1 < nParticles/2) && (particleNum2 < nParticles/2)) || ((particleNum1 >= nParticles/2) && (particleNum2 >= nParticles/2))){
-        a = 0.25;
-    } else {
-        a = 0.50;
-    }
-    return -2*a*beta/((1 + beta*r12)*(1 + beta*r12)*(1 + beta*r12));
+    return -2*aFactor(particleNum1, particleNum2)*beta/((1 + beta*r12)*(1 + beta*r12)*(1 + beta*r12));
 }

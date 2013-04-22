@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     orbitals/orbitals.cpp \
     Slater/slater.cpp \
     Jastrow/jastrow.cpp \
-    Jastrow/nojastrow.cpp
+    Jastrow/nojastrow.cpp \
+    minimizer/minimizer.cpp
 
 HEADERS += \
     lib.h \
@@ -26,7 +27,8 @@ HEADERS += \
     orbitals/orbitals.h \
     Slater/slater.h \
     Jastrow/jastrow.h \
-    Jastrow/nojastrow.h
+    Jastrow/nojastrow.h \
+    minimizer/minimizer.h
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3

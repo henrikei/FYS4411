@@ -8,7 +8,7 @@ using namespace arma;
 class VMCSolverBruteForce : public VMCSolver
 {
 public:
-    VMCSolverBruteForce(const int &charg);
+    VMCSolverBruteForce();
     void runMonteCarloIntegration();
 private:
     double stepLength;

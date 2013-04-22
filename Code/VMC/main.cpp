@@ -7,6 +7,7 @@
 #include "Jastrow/jastrow.h"
 
 #include <iostream>
+#include <sys/time.h>
 #include <armadillo>
 
 using namespace arma;
@@ -15,9 +16,26 @@ using namespace std;
 
 int main()
 {
-    VMCSolver *solver = new VMCSolverImportanceSampling(10);
-    waveFunction *wf = new waveFunction(10, 9.546, 0.177, 0);
-    localEnergy localE;
+    // Configuration
+    int nParticles = 2;
+    int charge = 2;
+    double alpha = 2;
+    double beta = 0.5;
+    int jastrow = 1;
+    int importanceSampling = 1;
+
+    srand(time(NULL));
+
+    VMCSolver *solver;
+    if (importanceSampling == 0){
+        solver = new VMCSolverBruteForce();
+    } else {
+        solver = new VMCSolverImportanceSampling();
+    }
+
+    waveFunction *wf = new waveFunction(nParticles, alpha, beta, jastrow);
+    localEnergy *localE = new localEnergy();
+    solver->setCharge(charge);
     solver->setWaveFunction(wf);
     solver->setLocalEnergy(localE);
     solver->runMonteCarloIntegration();

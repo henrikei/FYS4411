@@ -8,9 +8,9 @@ waveFunction::waveFunction(const int &nPart, const double &a, const double &b, c
     nDimensions = 3;
     slater = Slater(nParticles, alpha);
     if (jas == 0){
-        jastrow = new Jastrow(nParticles, beta);
-    } else {
         jastrow = new NoJastrow(nParticles);
+    } else {
+        jastrow = new Jastrow(nParticles, beta);
     }
 }
 
@@ -55,4 +55,12 @@ double waveFunction::getLaplaceRatio(const mat &r){
     value *= 2;
     value += slater.getLaplaceRatio(r) + jastrow->getLaplaceRatio(r);
     return value;
+}
+
+double waveFunction::getAlphaDerivativeRatio(const mat &r){
+    return slater.getAlphaDerivativeRatio(r);
+}
+
+double waveFunction::getBetaDerivativeRatio(const mat &r){
+    return jastrow->getBetaDerivativeRatio(r);
 }

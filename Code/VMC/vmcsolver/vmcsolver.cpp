@@ -21,7 +21,7 @@ void VMCSolver::setWaveFunction(waveFunction *w){
     nDimensions = w->getNDimensions();
 }
 
-void VMCSolver::setLocalEnergy(const localEnergy &E){
+void VMCSolver::setLocalEnergy(localEnergy *E){
     localE = E;
 }
 
@@ -31,4 +31,12 @@ double VMCSolver::getEnergy(){
 
 double VMCSolver::getVariance(){
     return variance;
+}
+
+double VMCSolver::getdEdAlpha(){
+    return dEdAlpha;
+}
+
+double VMCSolver::getdEdBeta(){
+    return dEdBeta;
 }

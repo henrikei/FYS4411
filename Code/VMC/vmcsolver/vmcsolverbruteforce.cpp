@@ -12,11 +12,10 @@
 using namespace arma;
 using namespace std;
 
-VMCSolverBruteForce::VMCSolverBruteForce(const int &charg)
+VMCSolverBruteForce::VMCSolverBruteForce()
 {
     stepLength = 0;
     nDummyCycles = 1000;
-    charge = charg;
 }
 
 void VMCSolverBruteForce::runMonteCarloIntegration()
@@ -101,7 +100,7 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
             }
             // update energies
             if (cycle >= thermalization){
-                deltaE = localE.getValue(rNew, wf, charge);
+                deltaE = localE->getValue(rNew, wf, charge);
                 energySum += deltaE;
                 energySquaredSum += deltaE*deltaE;
             }
