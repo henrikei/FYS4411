@@ -7,7 +7,8 @@ Minimizer::Minimizer()
     hBeta = 0.1;
     hAlphaMax = 0.2;
     hBetaMax = 0.2;
-    maxIter = 40;
+    maxIter = 100;
+    toler = 0.0001;
 }
 
 void Minimizer::run(VMCSolver *solver, waveFunction *wf, double alph, double bet){
@@ -19,10 +20,12 @@ void Minimizer::run(VMCSolver *solver, waveFunction *wf, double alph, double bet
 
     alpha = alph;
     beta = bet;
-    wf->setAlpha(alpha);
-    wf->setBeta(beta);
 
     while (counter < maxIter){
+        counter += 1;
+
+        wf->setAlpha(alpha);
+        wf->setBeta(beta);
         solver->runMonteCarloIntegration();
 
         dAlphaOld = dAlphaNew;
@@ -34,18 +37,34 @@ void Minimizer::run(VMCSolver *solver, waveFunction *wf, double alph, double bet
         dBetaNew = dBetaNew/fabs(dBetaNew);
 
         if(dAlphaOld/dAlphaNew < 0){
-            hAlpha = hAlpha/2;
+            hAlpha = 0.5*hAlpha;
         } else if(hAlpha < hAlphaMax){
-            hAlpha = 1.1*hAlpha;
+            hAlpha = 1.25*hAlpha;
         }
 
         if(dBetaOld/dBetaNew < 0){
-            hBeta = hBeta/2;
+            hBeta = 0.5*hBeta;
         } else if(hBeta < hBetaMax){
-            hBeta = 1.1*hBeta;
+            hBeta = 1.25*hBeta;
         }
 
         alpha -= hAlpha*dAlphaNew;
         beta -= hBeta*dBetaNew;
+
+        cout << "Alpha = " << alpha << endl;
+        cout << "Beta = " << beta << endl;
+
+        if(hAlpha < toler && hBeta < toler){
+            cout << "Reached tolerance" << endl;
+            break;
+        }
     }
+}
+
+double Minimizer::getAlpha(){
+    return alpha;
+}
+
+double Minimizer::getBeta(){
+    return beta;
 }

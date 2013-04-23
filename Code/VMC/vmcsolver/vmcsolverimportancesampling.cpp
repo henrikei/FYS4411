@@ -96,8 +96,6 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
     dEdBeta = 2*(betaTerm2 - betaTerm1*energy);
 
     cout << "Acceptance ratio: " << (double)acceptCount/((double)((nCycles + thermalization)*nParticles)) << endl;
-    cout << "dEdAlpha = " << dEdAlpha << endl;
-    cout << "dEdBeta = " << dEdBeta << endl;
 }
 
 // Calculates greens function ratio. y and x are position matrices. n is particle number.

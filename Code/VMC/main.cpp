@@ -5,6 +5,7 @@
 #include "localenergy/localEnergy.h"
 #include "orbitals/orbitals.h"
 #include "Jastrow/jastrow.h"
+#include "minimizer/minimizer.h"
 
 #include <iostream>
 #include <sys/time.h>
@@ -17,10 +18,10 @@ using namespace std;
 int main()
 {
     // Configuration
-    int nParticles = 2;
-    int charge = 2;
-    double alpha = 2;
-    double beta = 0.5;
+    int nParticles = 4;
+    int charge = 4;
+    double alpha = 4;
+    double beta = 1;
     int jastrow = 1;
     int importanceSampling = 1;
 
@@ -38,34 +39,12 @@ int main()
     solver->setCharge(charge);
     solver->setWaveFunction(wf);
     solver->setLocalEnergy(localE);
-    solver->runMonteCarloIntegration();
-    cout << "Energy: " << solver->getEnergy() << endl << "Variance: " << solver->getVariance();
 
+    Minimizer minimize;
+    minimize.run(solver, wf, alpha, beta);
 
-//    double alphamin = 1;
-//    double alphamax = 3;
-//    double betamin = 0;
-//    double betamax = 1;
-//    int n = 10;
+//    solver->runMonteCarloIntegration();
+//    cout << "Energy: " << solver->getEnergy() << endl << "Variance: " << solver->getVariance();
 
-//    ofstream ofile;
-//    ofile.open("results.dat");
-//    double alpha;
-//    double beta;
-//    double deltaAlpha = (double) (alphamax - alphamin)/n;
-//    double deltaBeta = (double) (betamax - betamin)/n;
-//    for (int i = 0; i < n + 1; i++){
-//        for (int j = 0; j < n+1; j++){
-//            alpha = alphamin + deltaAlpha*i;
-//            beta = betamin + deltaBeta*j;
-//            wf->setAlpha(alpha);
-//            wf->setBeta(beta);
-//            solver->runMonteCarloIntegration();
-//            ofile << solver->getEnergy() << "  ";
-//            cout << "j: " << j << endl;
-//        }
-//        ofile << endl;
-//    }
-//    ofile.close();
     return 0;
 }
