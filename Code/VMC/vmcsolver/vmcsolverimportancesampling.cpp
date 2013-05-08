@@ -1,9 +1,11 @@
 #include "vmcsolverimportancesampling.h"
 #include "lib.h"
 
+
+
 VMCSolverImportanceSampling::VMCSolverImportanceSampling()
 {
-    timeStep = 0.005;
+    timeStep = 0.01;
 }
 
 void VMCSolverImportanceSampling::runMonteCarloIntegration()
@@ -27,6 +29,8 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
     double betaTerm2 = 0;
 
     int acceptCount = 0;
+
+    ofstream outfile;
 
     // initial trial positions
     for(int i = 0; i < nParticles; i++) {
@@ -67,33 +71,59 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
                 }
                 wf->update(rOld);
             }
-            // update energies
+            // calculate integrals
             if (cycle >= thermalization){
                 deltaE = localE->getValue(rNew, wf, charge);
                 energySum += deltaE;
                 energySquaredSum += deltaE*deltaE;
 
-                dPsidAlpha = wf->getAlphaDerivativeRatio(rNew);
-                alphaTerm1 += dPsidAlpha;
-                alphaTerm2 += deltaE*dPsidAlpha;
+                // if minimizing, calculate energy gradients
+                if(minimizer){
+                    dPsidAlpha = wf->getAlphaDerivativeRatio(rNew);
+                    alphaTerm1 += dPsidAlpha;
+                    alphaTerm2 += deltaE*dPsidAlpha;
 
-                dPsidBeta = wf->getBetaDerivativeRatio(rNew);
-                betaTerm1 += dPsidBeta;
-                betaTerm2 += deltaE*dPsidBeta;
+                    dPsidBeta = wf->getBetaDerivativeRatio(rNew);
+                    betaTerm1 += dPsidBeta;
+                    betaTerm2 += deltaE*dPsidBeta;
+                }
+
+                // write out the radial distances of all particles every 20th cycle
+                if(oneBody && (cycle + i) % 20 == 0){
+                    if(oneBody < 2){
+                        outfile.open("onebody.dat");
+                        oneBody = 2;
+                    }
+                    for (int j = 0; j < nParticles; j++){
+                        double radialDist = 0;
+                        for (int k = 0; k < nDimensions; k++){
+                            radialDist += rNew(j,k)*rNew(j,k);
+                        }
+                        outfile << sqrt(radialDist) << "  ";
+                    }
+                    outfile << endl;
+                }
             }
         }
     }
+
     energy = energySum/(nCycles * nParticles);
     variance = energySquaredSum/(nCycles * nParticles) - energy*energy;
 
-    alphaTerm1 = alphaTerm1/(nCycles*nParticles);
-    alphaTerm2 = alphaTerm2/(nCycles*nParticles);
+    if(oneBody){
+        outfile.close();
+    }
 
-    betaTerm1 = betaTerm1/(nCycles*nParticles);
-    betaTerm2 = betaTerm2/(nCycles*nParticles);
+    if(minimizer ==1){
+        alphaTerm1 = alphaTerm1/(nCycles*nParticles);
+        alphaTerm2 = alphaTerm2/(nCycles*nParticles);
 
-    dEdAlpha = 2*(alphaTerm2 - alphaTerm1*energy);
-    dEdBeta = 2*(betaTerm2 - betaTerm1*energy);
+        betaTerm1 = betaTerm1/(nCycles*nParticles);
+        betaTerm2 = betaTerm2/(nCycles*nParticles);
+
+        dEdAlpha = 2*(alphaTerm2 - alphaTerm1*energy);
+        dEdBeta = 2*(betaTerm2 - betaTerm1*energy);
+    }
 
     cout << "Acceptance ratio: " << (double)acceptCount/((double)((nCycles + thermalization)*nParticles)) << endl;
 }

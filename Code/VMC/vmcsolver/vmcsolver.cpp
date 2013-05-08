@@ -6,8 +6,10 @@ VMCSolver::VMCSolver() :
     charge(-1),
     h(0.01),
     idum(-time(NULL)),
-    nCycles(100000),
-    thermalization(nCycles/10)
+    nCycles(1000000),
+    thermalization(nCycles/10),
+    minimizer(0),
+    oneBody(0)
 {
 }
 
@@ -39,4 +41,12 @@ double VMCSolver::getdEdAlpha(){
 
 double VMCSolver::getdEdBeta(){
     return dEdBeta;
+}
+
+void VMCSolver::calcEnergyGradients(){
+    minimizer = 1;
+}
+
+void VMCSolver::calcOneBodyDensity(){
+    oneBody = 1;
 }

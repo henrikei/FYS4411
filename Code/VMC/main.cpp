@@ -20,18 +20,24 @@ int main()
     // Configuration
     int nParticles = 4;
     int charge = 4;
-    double alpha = 4;
-    double beta = 1;
+    double alpha = 3.97;
+    double beta = 0.10;
     int jastrow = 1;
     int importanceSampling = 1;
+    int minimize = 0;
+    int oneBody = 1;
 
-    srand(time(NULL));
+
+
 
     VMCSolver *solver;
     if (importanceSampling == 0){
         solver = new VMCSolverBruteForce();
     } else {
         solver = new VMCSolverImportanceSampling();
+    }
+    if (oneBody){
+        solver->calcOneBodyDensity();
     }
 
     waveFunction *wf = new waveFunction(nParticles, alpha, beta, jastrow);
@@ -40,11 +46,14 @@ int main()
     solver->setWaveFunction(wf);
     solver->setLocalEnergy(localE);
 
-    Minimizer minimize;
-    minimize.run(solver, wf, alpha, beta);
+    if (minimize == 1){
+        solver->calcEnergyGradients();
+        Minimizer minimize;
+        minimize.run(solver, wf, alpha, beta);
+    }
 
-//    solver->runMonteCarloIntegration();
-//    cout << "Energy: " << solver->getEnergy() << endl << "Variance: " << solver->getVariance();
+    solver->runMonteCarloIntegration();
+    cout << "Energy: " << solver->getEnergy() << endl << "Variance: " << solver->getVariance();
 
     return 0;
 }

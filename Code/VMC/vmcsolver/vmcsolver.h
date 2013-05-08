@@ -2,8 +2,13 @@
 #define VMCSOLVER_H
 
 #include <armadillo>
+#include <fstream>
 #include "waveFunction/wavefunction.h"
 #include "localenergy/localEnergy.h"
+
+using namespace std;
+using namespace arma;
+
 
 class VMCSolver
 {
@@ -16,6 +21,8 @@ public:
     double getVariance();
     double getdEdAlpha();
     double getdEdBeta();
+    void calcEnergyGradients();
+    void calcOneBodyDensity();
     virtual void runMonteCarloIntegration()=0;
 protected:
     waveFunction *wf;
@@ -23,7 +30,6 @@ protected:
 
     int nParticles;
     int nDimensions;
-
     int charge;
 
     double h;
@@ -31,11 +37,11 @@ protected:
 
     long idum;
 
-    double alpha;
-    double beta;
-
     int nCycles;
     int thermalization;
+
+    int minimizer;
+    int oneBody;
 
     mat rOld;
     mat rNew;
