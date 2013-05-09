@@ -7,7 +7,7 @@ class localEnergy
 {
 public:
     localEnergy();
-    double getValue(const mat &, waveFunction*, const double & charge);
+    virtual double getValue(const mat &r, waveFunction*wf, double charge)=0;
 };
 
 #endif // LOCALENERGY_H

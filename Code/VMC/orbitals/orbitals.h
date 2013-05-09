@@ -10,13 +10,12 @@ class Orbitals
 {
 public:
     Orbitals();
-    Orbitals(const int &nPart, const double &a);
     void setAlpha(const double &a);
-    double getValue(const int &particleNum, const int &quantumNum, const mat &R);
-    rowvec3 getGradient(const int &particleNum, const int &quantumNum, const mat &R);
-    double getLaplacian(const int &particleNum, const int &quantumNum, const mat &R);
-    double getAlphaDerivative(const int &particleNum, const int &quantumNum, const mat &R);
-private:
+    virtual double getValue(int particleNum, int quantumNum, const mat &R)=0;
+    virtual rowvec3 getGradient(int particleNum, int quantumNum, const mat &R)=0;
+    virtual double getLaplacian(int particleNum, int quantumNum, const mat &R)=0;
+    virtual double getAlphaDerivative(int particleNum, int quantumNum, const mat &R)=0;
+protected:
     int nParticles;
     int nDimensions;
     double alpha;

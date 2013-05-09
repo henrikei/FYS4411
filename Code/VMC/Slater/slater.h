@@ -3,13 +3,18 @@
 
 #include <armadillo>
 #include "orbitals/orbitals.h"
+#include "orbitals/hydrogenic.h"
+#include "orbitals/diatomic.h"
+
+using namespace std;
+using namespace arma;
 
 
 class Slater
 {
 public:
     Slater();
-    Slater(const int &nPart, const double &alph);
+    Slater(string orbitalType, int nPart, double alph);
     void setAlpha(const double &a);
     void update(const mat &R);
     double getRatio(const int &particleNum, const mat &R);
@@ -20,7 +25,7 @@ private:
     int nParticles;
     int nDimensions;
     double alpha;
-    Orbitals orbitals;
+    Orbitals *orbitals;
 
     mat slaterUp;
     mat slaterDown;

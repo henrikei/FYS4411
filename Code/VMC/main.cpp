@@ -25,7 +25,8 @@ int main()
     int jastrow = 1;
     int importanceSampling = 1;
     int minimize = 0;
-    int oneBody = 1;
+    int oneBody = 0;
+    string orbitalType = "Hydrogenic";
 
 
 
@@ -40,7 +41,7 @@ int main()
         solver->calcOneBodyDensity();
     }
 
-    waveFunction *wf = new waveFunction(nParticles, alpha, beta, jastrow);
+    waveFunction *wf = new waveFunction(orbitalType, nParticles, alpha, beta, jastrow);
     localEnergy *localE = new localEnergy();
     solver->setCharge(charge);
     solver->setWaveFunction(wf);

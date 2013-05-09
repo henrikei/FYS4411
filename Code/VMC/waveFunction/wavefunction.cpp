@@ -1,12 +1,14 @@
 #include "wavefunction.h"
 
-waveFunction::waveFunction(const int &nPart, const double &a, const double &b, const int &jas)
+waveFunction::waveFunction(string orbitalType, int nPart, double a, double b, int jas)
 {
     nParticles = nPart;
     alpha = a;
     beta = b;
     nDimensions = 3;
-    slater = Slater(nParticles, alpha);
+
+    slater = Slater(orbitalType, nParticles, alpha);
+
     if (jas == 0){
         jastrow = new NoJastrow(nParticles);
     } else {

@@ -7,11 +7,13 @@
 #include "Jastrow/nojastrow.h"
 
 using namespace arma;
+using namespace std;
+
 
 class waveFunction
 {
 public:
-    waveFunction(const int &nPart, const double &a, const double &b, const int &jas);
+    waveFunction(string orbitalType,int nPart, double a, double b, int jas);
     void setAlpha (const double &a);
     void setBeta (const double &a);
     int getNParticles();
