@@ -3,6 +3,8 @@
 #include "vmcsolver/vmcsolverimportancesampling.h"
 #include "waveFunction/wavefunction.h"
 #include "localenergy/localEnergy.h"
+#include "localenergy/atomicham.h"
+#include "localenergy/diatomicham.h"
 #include "orbitals/orbitals.h"
 #include "Jastrow/jastrow.h"
 #include "minimizer/minimizer.h"
@@ -27,10 +29,11 @@ int main()
     int minimize = 0;
     int oneBody = 0;
     string orbitalType = "Hydrogenic";
+    string hamiltonianType = "Atomic";
 
 
 
-
+    // Initialization
     VMCSolver *solver;
     if (importanceSampling == 0){
         solver = new VMCSolverBruteForce();
@@ -42,11 +45,23 @@ int main()
     }
 
     waveFunction *wf = new waveFunction(orbitalType, nParticles, alpha, beta, jastrow);
-    localEnergy *localE = new localEnergy();
+
+    localEnergy *localE;
+    if (hamiltonianType == "Atomic"){
+        localE = new AtomicHam();
+    } else if (hamiltonianType == "Diatomic"){
+        localE = new DiatomicHam();
+    } else {
+        cout << "Error: Hamiltonian type not defined" << endl;
+        exit(1);
+    }
+
     solver->setCharge(charge);
     solver->setWaveFunction(wf);
     solver->setLocalEnergy(localE);
 
+
+    // Run calculation
     if (minimize == 1){
         solver->calcEnergyGradients();
         Minimizer minimize;
