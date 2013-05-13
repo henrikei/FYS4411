@@ -7,12 +7,16 @@
 class Diatomic : public Orbitals
 {
 public:
-    Diatomic(int nPart, double r, double a);
+    Diatomic(int nPart);
+    void setAlpha(double a);
+    void setR(double R);
     double getValue(int particleNum, int quantumNum, const mat &R);
     rowvec3 getGradient(int particleNum, int quantumNum, const mat &R);
     double getLaplacian(int particleNum, int quantumNum, const mat &R);
+    double getAlphaDerivative(int particleNum, int quantumNum, const mat &R);
 private:
-    rowvec3 rNuclei; //vector from origo to proton1
+    mat rNuclei; //vector from origo to proton1
+    Orbitals *hydrogenic;
 };
 
 #endif // DIATOMIC_H

@@ -14,8 +14,9 @@ class Slater
 {
 public:
     Slater();
-    Slater(string orbitalType, int nPart, double alph);
-    void setAlpha(const double &a);
+    Slater(string orbitalType, int nPart);
+    void setAlpha(double alpha);
+    void setR(double R);
     void update(const mat &R);
     double getRatio(const int &particleNum, const mat &R);
     mat getGradientRatio(const mat &R);
@@ -24,7 +25,6 @@ public:
 private:
     int nParticles;
     int nDimensions;
-    double alpha;
     Orbitals *orbitals;
 
     mat slaterUp;

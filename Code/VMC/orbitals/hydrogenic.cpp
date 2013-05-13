@@ -1,12 +1,15 @@
 #include "hydrogenic.h"
 
 
-Hydrogenic::Hydrogenic(int nPart, double a)
+Hydrogenic::Hydrogenic(int nPart)
 {
     nParticles = nPart;
     nDimensions = 3;
-    alpha = a;
     gradient = zeros<rowvec>(nDimensions);
+}
+
+void Hydrogenic::setR(double R){
+    (void) R;
 }
 
 double Hydrogenic::getValue(int particleNum, int quantumNum, const mat &R){

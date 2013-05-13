@@ -7,7 +7,8 @@
 class Hydrogenic : public Orbitals
 {
 public:
-    Hydrogenic(int nPart, double a);
+    Hydrogenic(int nPart);
+    void setR(double R);
     double getValue(int particleNum, int quantumNum, const mat &R);
     rowvec3 getGradient(int particleNum, int quantumNum, const mat &R);
     double getLaplacian(int particleNum, int quantumNum, const mat &R);

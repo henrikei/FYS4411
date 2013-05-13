@@ -8,11 +8,10 @@ Slater::Slater()
 {
 }
 
-Slater::Slater(string orbitalType, int nPart, double alph)
+Slater::Slater(string orbitalType, int nPart)
 {
     nParticles = nPart;
     nDimensions = 3;
-    alpha = alph;
 
     slaterUp = zeros(nParticles/2, nParticles/2);
     slaterDown = zeros(nParticles/2, nParticles/2);
@@ -20,18 +19,21 @@ Slater::Slater(string orbitalType, int nPart, double alph)
     invSlaterDown = zeros(nParticles/2, nParticles/2);
 
     if (orbitalType == "Hydrogenic"){
-        orbitals = new Hydrogenic(nParticles, alpha);
+        orbitals = new Hydrogenic(nParticles);
     } else if (orbitalType == "Diatomic"){
-
+        orbitals = new Diatomic(nParticles);
     } else {
         cout << "Error: Orbital type not defined." << endl;
         exit(1);
     }
 }
 
-void Slater::setAlpha(const double &a){
-    alpha = a;
+void Slater::setAlpha(double alpha){
     orbitals->setAlpha(alpha);
+}
+
+void Slater::setR(double R){
+    orbitals->setR(R);
 }
 
 void Slater::update(const mat &R){

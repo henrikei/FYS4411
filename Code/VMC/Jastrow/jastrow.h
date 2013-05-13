@@ -9,7 +9,7 @@ class Jastrow
 {
 public:
     Jastrow();
-    Jastrow(const int &nPart, const double &b);
+    Jastrow(int nPart);
     void setBeta(const double &b);
     virtual double getRatio(const int &particleNum, const mat &rNew, const mat &rOld);
     virtual mat getGradientRatio(const mat &r);

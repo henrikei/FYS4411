@@ -35,3 +35,7 @@ double AtomicHam::getValue(const mat &r, waveFunction *wf, double charge){
     }
     return (kineticEnergy + potentialEnergy);
 }
+
+void AtomicHam::setR(double r){
+    (void) r;
+}

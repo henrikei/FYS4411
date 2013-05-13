@@ -3,9 +3,10 @@
 
 Orbitals::Orbitals()
 {
+    alpha = 2;
 }
 
-void Orbitals::setAlpha(const double &a){
+void Orbitals::setAlpha(double a){
     alpha = a;
 }
 

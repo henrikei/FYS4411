@@ -4,11 +4,11 @@ Jastrow::Jastrow()
 {
 }
 
-Jastrow::Jastrow(const int &nPart, const double &b)
+Jastrow::Jastrow(int nPart)
 {
     nParticles = nPart;
     nDimensions = 3;
-    beta = b;
+    beta = 1;
 }
 
 void Jastrow::setBeta(const double &b){

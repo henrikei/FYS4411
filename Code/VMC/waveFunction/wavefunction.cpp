@@ -1,29 +1,29 @@
 #include "wavefunction.h"
 
-waveFunction::waveFunction(string orbitalType, int nPart, double a, double b, int jas)
+waveFunction::waveFunction(string orbitalType, int nPart, int jas)
 {
     nParticles = nPart;
-    alpha = a;
-    beta = b;
     nDimensions = 3;
 
-    slater = Slater(orbitalType, nParticles, alpha);
+    slater = Slater(orbitalType, nParticles);
 
     if (jas == 0){
         jastrow = new NoJastrow(nParticles);
     } else {
-        jastrow = new Jastrow(nParticles, beta);
+        jastrow = new Jastrow(nParticles);
     }
 }
 
-void waveFunction::setAlpha(const double &a){
-    alpha = a;
+void waveFunction::setAlpha(double alpha){
     slater.setAlpha(alpha);
 }
 
-void waveFunction::setBeta(const double &b){
-    beta = b;
+void waveFunction::setBeta(double beta){
     jastrow->setBeta(beta);
+}
+
+void waveFunction::setR(double R){
+    slater.setR(R);
 }
 
 int waveFunction::getNParticles(){
@@ -40,7 +40,7 @@ void waveFunction::update(const mat &r){
     gradientRatioJ = jastrow->getGradientRatio(r);
 }
 
-double waveFunction::getRatio(const int &particleNum, const mat &rNew, const mat &rOld){
+double waveFunction::getRatio(int particleNum, const mat &rNew, const mat &rOld){
     return slater.getRatio(particleNum, rNew)*jastrow->getRatio(particleNum, rNew, rOld);
 }
 

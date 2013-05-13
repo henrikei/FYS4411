@@ -13,20 +13,19 @@ using namespace std;
 class waveFunction
 {
 public:
-    waveFunction(string orbitalType,int nPart, double a, double b, int jas);
-    void setAlpha (const double &a);
-    void setBeta (const double &a);
+    waveFunction(string orbitalType,int nPart, int jas);
+    void setAlpha (double alpha);
+    void setBeta (double beta);
+    void setR(double R);
     int getNParticles();
     int getNDimensions();
     void update(const mat &r);
-    double getRatio(const int &particleNum, const mat &rNew, const mat &rOld);
+    double getRatio(int particleNum, const mat &rNew, const mat &rOld);
     mat getQuantumForceRatio();
     double getLaplaceRatio(const mat &r);
     double getAlphaDerivativeRatio(const mat &r);
     double getBetaDerivativeRatio(const mat &r);
 protected:
-    double alpha;
-    double beta;
     int nParticles;
     int nDimensions;
     Slater slater;

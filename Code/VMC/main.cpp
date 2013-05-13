@@ -20,16 +20,17 @@ using namespace std;
 int main()
 {
     // Configuration
-    int nParticles = 4;
-    int charge = 4;
-    double alpha = 3.97;
-    double beta = 0.10;
+    int nParticles = 2;
+    int charge = 1;
+    double alpha = 1.285;
+    double beta = 0.28;
+    double R = 1.4;
     int jastrow = 1;
     int importanceSampling = 1;
     int minimize = 0;
     int oneBody = 0;
-    string orbitalType = "Hydrogenic";
-    string hamiltonianType = "Atomic";
+    string orbitalType = "Diatomic";
+    string hamiltonianType = "DiatomicHam";
 
 
 
@@ -44,13 +45,17 @@ int main()
         solver->calcOneBodyDensity();
     }
 
-    waveFunction *wf = new waveFunction(orbitalType, nParticles, alpha, beta, jastrow);
+    waveFunction *wf = new waveFunction(orbitalType, nParticles, jastrow);
+    wf->setAlpha(alpha);
+    wf->setBeta(beta);
 
     localEnergy *localE;
     if (hamiltonianType == "Atomic"){
         localE = new AtomicHam();
-    } else if (hamiltonianType == "Diatomic"){
+    } else if (hamiltonianType == "DiatomicHam"){
         localE = new DiatomicHam();
+        wf->setR(R);
+        localE->setR(R);
     } else {
         cout << "Error: Hamiltonian type not defined" << endl;
         exit(1);
