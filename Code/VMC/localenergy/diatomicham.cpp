@@ -40,7 +40,7 @@ double DiatomicHam::getValue(const mat &r, waveFunction *wf, double charge){
 
 
     // Contribution from nucleus-nucleus interaction
-    potentialEnergy += 1/(2*rNuclei(0));
+    potentialEnergy += charge*charge/(2*rNuclei(0));
 
     return (kineticEnergy + potentialEnergy);
 

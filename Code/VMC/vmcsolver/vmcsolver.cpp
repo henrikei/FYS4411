@@ -6,7 +6,7 @@ VMCSolver::VMCSolver() :
     charge(-1),
     h(0.01),
     idum(-time(NULL)),
-    nCycles(1000000),
+    nCycles(100000),
     thermalization(nCycles/10),
     minimizer(0),
     oneBody(0)
@@ -25,6 +25,10 @@ void VMCSolver::setWaveFunction(waveFunction *w){
 
 void VMCSolver::setLocalEnergy(localEnergy *E){
     localE = E;
+}
+
+void VMCSolver::setNumOfCycles(int n){
+    nCycles = n;
 }
 
 double VMCSolver::getEnergy(){

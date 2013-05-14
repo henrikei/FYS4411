@@ -3,10 +3,10 @@
 
 Minimizer::Minimizer()
 {
-    hAlpha = 0.1;
-    hBeta = 0.1;
-    hAlphaMax = 0.2;
-    hBetaMax = 0.2;
+    hAlpha = 0.01;
+    hBeta = 0.01;
+    hAlphaMax = 0.1;
+    hBetaMax = 0.1;
     maxIter = 100;
     toler = 0.0001;
 }
@@ -51,11 +51,11 @@ void Minimizer::run(VMCSolver *solver, waveFunction *wf, double alph, double bet
         alpha -= hAlpha*dAlphaNew;
         beta -= hBeta*dBetaNew;
 
-        cout << "Alpha = " << alpha << endl;
-        cout << "Beta = " << beta << endl;
+        //cout << "Alpha = " << alpha << endl;
+        //cout << "Beta = " << beta << endl;
 
         if(hAlpha < toler && hBeta < toler){
-            cout << "Reached tolerance" << endl;
+           // cout << "Reached tolerance" << endl;
             break;
         }
     }

@@ -17,6 +17,7 @@ public:
     void setCharge(const int &charg);
     void setWaveFunction(waveFunction *w);
     void setLocalEnergy(localEnergy *E);
+    void setNumOfCycles(int n);
     double getEnergy();
     double getVariance();
     double getdEdAlpha();

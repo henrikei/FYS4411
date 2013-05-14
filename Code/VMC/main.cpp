@@ -22,12 +22,12 @@ int main()
     // Configuration
     int nParticles = 2;
     int charge = 1;
-    double alpha = 1.285;
+    double alpha = 1.28;
     double beta = 0.28;
-    double R = 1.4;
+    double R = 0.1;
     int jastrow = 1;
     int importanceSampling = 1;
-    int minimize = 0;
+    int minimize = 1;
     int oneBody = 0;
     string orbitalType = "Diatomic";
     string hamiltonianType = "DiatomicHam";
@@ -67,14 +67,39 @@ int main()
 
 
     // Run calculation
-    if (minimize == 1){
-        solver->calcEnergyGradients();
-        Minimizer minimize;
-        minimize.run(solver, wf, alpha, beta);
-    }
+    ofstream ofile;
+    ofile.open("Hydrogen_Potential.dat");
+    int N = 100;
+    int nCycles1 = 10000;
+    int nCycles2 = 1000000;
+    double Rmin = 0.5;
+    double Rmax = 4.0;
+    alpha = 1.5;
+    beta = 0.5;
+    double deltaR = (Rmax - Rmin)/((double)N);
+    for (int i = 0; i < N; i++){
+        R = Rmin + i*deltaR;
+        wf->setR(R);
+        localE->setR(R);
+        if (minimize == 1){
+            solver->calcEnergyGradients();
+            solver->setNumOfCycles(nCycles1);
+            Minimizer minimizer;
+            minimizer.run(solver, wf, alpha, beta);
+            alpha = minimizer.getAlpha();
+            beta = minimizer.getBeta();
+            cout << "alpha = " << alpha << ", beta = " << beta << endl;
+        }
 
-    solver->runMonteCarloIntegration();
-    cout << "Energy: " << solver->getEnergy() << endl << "Variance: " << solver->getVariance();
+        solver->setNumOfCycles(nCycles2);
+        solver->runMonteCarloIntegration();
+        ofile << R << "  " << solver->getEnergy() << endl;
+
+        cout << "R = " << R << ", E = " << solver->getEnergy() << endl;
+    }
+    ofile.close();
+
+    //cout << "Energy: " << solver->getEnergy() << endl << "Variance: " << solver->getVariance();
 
     return 0;
 }
