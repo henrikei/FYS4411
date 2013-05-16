@@ -51,12 +51,14 @@ void Minimizer::run(VMCSolver *solver, waveFunction *wf, double alph, double bet
         alpha -= hAlpha*dAlphaNew;
         beta -= hBeta*dBetaNew;
 
-        //cout << "Alpha = " << alpha << endl;
-        //cout << "Beta = " << beta << endl;
+        if (solver->getMPIRank() ==0 ){
+            cout << "Alpha = " << alpha << endl;
+            cout << "Beta = " << beta << endl;
 
-        if(hAlpha < toler && hBeta < toler){
-           // cout << "Reached tolerance" << endl;
-            break;
+            if(hAlpha < toler && hBeta < toler){
+                cout << "Reached tolerance" << endl;
+                break;
+            }
         }
     }
 }

@@ -5,7 +5,6 @@ VMCSolver::VMCSolver() :
     nDimensions(-1),
     charge(-1),
     h(0.01),
-    idum(-time(NULL)),
     nCycles(100000),
     thermalization(nCycles/10),
     minimizer(0),
@@ -28,7 +27,8 @@ void VMCSolver::setLocalEnergy(localEnergy *E){
 }
 
 void VMCSolver::setNumOfCycles(int n){
-    nCycles = n;
+    nCycles = n/numprocs;
+    thermalization = nCycles/10;
 }
 
 double VMCSolver::getEnergy(){
@@ -53,4 +53,13 @@ void VMCSolver::calcEnergyGradients(){
 
 void VMCSolver::calcOneBodyDensity(){
     oneBody = 1;
+}
+
+void VMCSolver::init_MPI(int rank, int nprocs){
+    my_rank = rank;
+    numprocs = nprocs;
+}
+
+int VMCSolver::getMPIRank(){
+    return my_rank;
 }

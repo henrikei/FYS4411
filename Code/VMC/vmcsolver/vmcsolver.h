@@ -25,9 +25,15 @@ public:
     void calcEnergyGradients();
     void calcOneBodyDensity();
     virtual void runMonteCarloIntegration()=0;
+    void init_MPI(int rank, int nprocs);
+    int getMPIRank();
+
 protected:
     waveFunction *wf;
     localEnergy *localE;
+
+    int my_rank;
+    int numprocs;
 
     int nParticles;
     int nDimensions;
@@ -35,8 +41,6 @@ protected:
 
     double h;
     double h2;
-
-    long idum;
 
     int nCycles;
     int thermalization;

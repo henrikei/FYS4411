@@ -1,5 +1,6 @@
 #include "vmcsolverimportancesampling.h"
 #include "lib.h"
+#include <mpi.h>
 
 
 
@@ -10,6 +11,7 @@ VMCSolverImportanceSampling::VMCSolverImportanceSampling()
 
 void VMCSolverImportanceSampling::runMonteCarloIntegration()
 {
+
     rOld = zeros<mat>(nParticles, nDimensions);
     rNew = zeros<mat>(nParticles, nDimensions);
     double ratio2 = 0;
@@ -30,7 +32,13 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
 
     int acceptCount = 0;
 
-    ofstream outfile;
+    ofstream outFileBlocking;
+    ofstream outFileOneBody;
+    stringstream name;
+
+    name << "../Out/blocking" << my_rank << ".dat";
+    outFileBlocking.open(name.str().c_str());
+
 
     // initial trial positions
     for(int i = 0; i < nParticles; i++) {
@@ -42,6 +50,8 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
 
     wf->update(rOld);
     quantumForceOld = wf->getQuantumForceRatio();
+
+
 
     // Monte Carlo loop
     for(int cycle = 0; cycle < (nCycles + thermalization); cycle++){
@@ -55,11 +65,13 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
             // Calculate slater-ratio and quantum force-ratio
             ratio2 = wf->getRatio(i, rNew, rOld);
             ratio2 *= ratio2;
+            // In importance sampling wf needs to be updated before accepting/rejecting the
+            // move because quantumforce is needed.
             wf->update(rNew);
             quantumForceNew = wf->getQuantumForceRatio();
 
             // Check for step acceptance (if yes, update position and quantum force, if no, reset position)
-            if(ran2(&idum) <= (getGreensFunctionRatio(rNew, rOld, quantumForceNew, quantumForceOld)*ratio2)){
+            if(randu() <= (getGreensFunctionRatio(rNew, rOld, quantumForceNew, quantumForceOld)*ratio2)){
                 for(int j = 0; j < nDimensions; j++) {
                     rOld(i,j) = rNew(i,j);
                 }
@@ -71,11 +83,16 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
                 }
                 wf->update(rOld);
             }
+
+
             // calculate integrals
             if (cycle >= thermalization){
                 deltaE = localE->getValue(rNew, wf, charge);
                 energySum += deltaE;
                 energySquaredSum += deltaE*deltaE;
+
+                // Write deltaE to file for later Blocking
+                outFileBlocking << deltaE << endl;
 
                 // if minimizing, calculate energy gradients
                 if(minimizer){
@@ -88,36 +105,57 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
                     betaTerm2 += deltaE*dPsidBeta;
                 }
 
-                // write out the radial distances of all particles every 20th cycle
-                if(oneBody && (cycle + i) % 20 == 0){
+                // if oneBody, write out the positions of all particles after all particles
+                // have been moved
+                if(oneBody && (cycle + i) % nParticles == 0){
                     if(oneBody < 2){
-                        outfile.open("onebody.dat");
+                        stringstream filename;
+                        filename << "../Out/onebody" << my_rank << ".dat";
+                        outFileOneBody.open(filename.str().c_str());
                         oneBody = 2;
                     }
                     for (int j = 0; j < nParticles; j++){
-                        double radialDist = 0;
                         for (int k = 0; k < nDimensions; k++){
-                            radialDist += rNew(j,k)*rNew(j,k);
+                            outFileOneBody << rNew(j,k) << "  ";
                         }
-                        outfile << sqrt(radialDist) << "  ";
+                        outFileOneBody << endl;
                     }
-                    outfile << endl;
                 }
             }
         }
     }
 
+    outFileBlocking.close();
+
+    if(oneBody){
+        outFileOneBody.close();
+    }
+
+    double energySumMPI, energySquaredSumMPI;
+    MPI_Allreduce(&energySum, &energySumMPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(&energySquaredSum, &energySquaredSumMPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    energySum = energySumMPI/numprocs;
+    energySquaredSum = energySquaredSumMPI/numprocs;
+
     energy = energySum/(nCycles * nParticles);
     variance = energySquaredSum/(nCycles * nParticles) - energy*energy;
 
-    if(oneBody){
-        outfile.close();
-    }
-
     if(minimizer ==1){
+
+        double alphaTerm1MPI, alphaTerm2MPI, betaTerm1MPI, betaTerm2MPI;
+        MPI_Allreduce(&alphaTerm1, &alphaTerm1MPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+        MPI_Allreduce(&alphaTerm2, &alphaTerm2MPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+        MPI_Allreduce(&betaTerm1, &betaTerm1MPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+        MPI_Allreduce(&betaTerm2, &betaTerm2MPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+
+        //maa vite numprocs
+        alphaTerm1 = alphaTerm1MPI/numprocs;
+        alphaTerm2 = alphaTerm2MPI/numprocs;
+        betaTerm1 = betaTerm1MPI/numprocs;
+        betaTerm2 = betaTerm2MPI/numprocs;
+
         alphaTerm1 = alphaTerm1/(nCycles*nParticles);
         alphaTerm2 = alphaTerm2/(nCycles*nParticles);
-
         betaTerm1 = betaTerm1/(nCycles*nParticles);
         betaTerm2 = betaTerm2/(nCycles*nParticles);
 
