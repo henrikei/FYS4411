@@ -39,6 +39,10 @@ double VMCSolver::getVariance(){
     return variance;
 }
 
+double VMCSolver::getPotentialEnergy(){
+    return potentialEnergy;
+}
+
 double VMCSolver::getdEdAlpha(){
     return dEdAlpha;
 }

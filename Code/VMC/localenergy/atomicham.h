@@ -7,7 +7,7 @@ class AtomicHam : public localEnergy
 {
 public:
     AtomicHam();
-    double getValue(const mat &r, waveFunction *wf, double charge);
+    void calculate(const mat &r, waveFunction *wf, double charge);
     void setR(double r);
 };
 

@@ -27,6 +27,7 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
 
     double energySum = 0;
     double energySquaredSum = 0;
+    double potentialEnergySum = 0;
     double deltaE;
 
     double dPsidAlpha = 0;
@@ -117,9 +118,15 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
             }
             // update energies
             if (cycle >= thermalization){
-                deltaE = localE->getValue(rNew, wf, charge);
+                localE->calculate(rNew, wf, charge);
+                deltaE = localE->getTotal();
                 energySum += deltaE;
                 energySquaredSum += deltaE*deltaE;
+
+                potentialEnergySum += localE->getPotential();
+
+                // Write deltaE to file for later Blocking
+                outFileBlocking << deltaE << endl;
 
                 // if minimizing, calculate energy gradients
                 if(minimizer){
@@ -133,7 +140,7 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
                 }
 
                 // if oneBody, write out the radial distances of all particles every 20th cycle
-                if(oneBody && (cycle + i) % 20 == 0){
+                if(oneBody && (i+1) == nParticles){
                     if(oneBody < 2){
                         stringstream filename;
                         filename << "../Out/onebody" << my_rank << ".dat";
@@ -158,29 +165,35 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
     }
 
     //ALLREDUCE
-    double energySumMPI, energySquaredSumMPI;
+    double energySumMPI, energySquaredSumMPI, potentialEnergySumMPI;
     MPI_Allreduce(&energySum, &energySumMPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     MPI_Allreduce(&energySquaredSum, &energySquaredSumMPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(&potentialEnergySum, &potentialEnergySumMPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     energySum = energySumMPI/numprocs;
-    energySquaredSum = energySumMPI/numprocs;
+    energySquaredSum = energySquaredSumMPI/numprocs;
+    potentialEnergySum = potentialEnergySumMPI/numprocs;
 
 
     energy = energySum/(nCycles * nParticles); //SKALER MED NPROCS OGSAA
     variance = energySquaredSum/(nCycles * nParticles) - energy*energy;
+    potentialEnergy = potentialEnergySum/(nCycles * nParticles);
 
     if(minimizer ==1){
 
-        double alphaTerm1MPI, alphaTerm2MPI;
+        double alphaTerm1MPI, alphaTerm2MPI, betaTerm1MPI, betaTerm2MPI;
         MPI_Allreduce(&alphaTerm1, &alphaTerm1MPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
         MPI_Allreduce(&alphaTerm2, &alphaTerm2MPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+        MPI_Allreduce(&betaTerm1, &betaTerm1MPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+        MPI_Allreduce(&betaTerm2, &betaTerm2MPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 
         //maa vite numprocs
         alphaTerm1 = alphaTerm1MPI/numprocs;
         alphaTerm2 = alphaTerm2MPI/numprocs;
+        betaTerm1 = betaTerm1MPI/numprocs;
+        betaTerm2 = betaTerm2MPI/numprocs;
 
         alphaTerm1 = alphaTerm1/(nCycles*nParticles);
         alphaTerm2 = alphaTerm2/(nCycles*nParticles);
-
         betaTerm1 = betaTerm1/(nCycles*nParticles);
         betaTerm2 = betaTerm2/(nCycles*nParticles);
 

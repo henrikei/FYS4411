@@ -3,13 +3,16 @@
 DiatomicHam::DiatomicHam()
 {
     rNuclei << 1.0 << 0.0 << 0.0;
+    potentialEnergy = 0;
+    kineticEnergy = 0;
+    totalEnergy = 0;
 }
 
-double DiatomicHam::getValue(const mat &r, waveFunction *wf, double charge){
+void DiatomicHam::calculate(const mat &r, waveFunction *wf, double charge){
 
-    double kineticEnergy = -0.5*wf->getLaplaceRatio(r);
+    kineticEnergy = -0.5*wf->getLaplaceRatio(r);
 
-    double potentialEnergy = 0;
+    potentialEnergy = 0;
     double rp1 = 0;     // electron-proton1 distance
     double rp2 = 0;     // electron-proton2 distance
     double r12 = 0;     // eletron-electron distance
@@ -42,7 +45,7 @@ double DiatomicHam::getValue(const mat &r, waveFunction *wf, double charge){
     // Contribution from nucleus-nucleus interaction
     potentialEnergy += charge*charge/(2*rNuclei(0));
 
-    return (kineticEnergy + potentialEnergy);
+    totalEnergy = kineticEnergy + potentialEnergy;
 
 }
 

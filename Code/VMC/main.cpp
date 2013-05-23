@@ -7,7 +7,8 @@
 #include "localenergy/diatomicham.h"
 #include "orbitals/orbitals.h"
 #include "Jastrow/jastrow.h"
-#include "minimizer/minimizer.h"
+#include "minimizer/minimizeralpha.h"
+#include "minimizer/minimizeralphabeta.h"
 
 #include <iostream>
 #include <sys/time.h>
@@ -29,18 +30,18 @@ int main()
 
 
     // Configuration
-    int nParticles = 10;
-    int charge = 10;
-    double alpha = 10.267;
-    double beta = 0.086;
-    double R = 4;
+    int nParticles = 2;
+    int charge = 1;
+    double alpha = 1.30;
+    double beta = 0.40;
+    double R = 1.34;
     int jastrow = 1;
     int importanceSampling = 1;
     int nCycles = 1000000; //total nCycles
     int minimize = 0;
     int oneBody = 1;
-    string orbitalType = "Hydrogenic";          // Hydrogenic or Diatomic
-    string hamiltonianType = "AtomicHam";     // AtomicHam or DiatomicHam
+    string orbitalType = "Diatomic";          // Hydrogenic or Diatomic
+    string hamiltonianType = "DiatomicHam";     // AtomicHam or DiatomicHam
 
 
 
@@ -79,30 +80,40 @@ int main()
     solver->setLocalEnergy(localE);
     solver->setNumOfCycles(nCycles);
 
+
     if (minimize == 1){
         solver->calcEnergyGradients();
-        Minimizer minimizer;
-        minimizer.run(solver, wf, alpha, beta);
-        alpha = minimizer.getAlpha();
-        beta = minimizer.getBeta();
+        if (jastrow == 0){
+            MinimizerAlpha minimizer;
+            minimizer.run(solver, wf, alpha);
+            alpha = minimizer.getAlpha();
 
-        if (my_rank == 0) {
-            cout << "alpha = " << alpha << ", beta = " << beta << endl;
+            if (my_rank == 0) {
+                cout << "alpha = " << alpha << endl;
+            }
+        } else {
+            MinimizerAlphaBeta minimizer;
+            minimizer.run(solver, wf, alpha, beta);
+            alpha = minimizer.getAlpha();
+            beta = minimizer.getBeta();
+
+            if (my_rank == 0) {
+                cout << "alpha = " << alpha << ", beta = " << beta << endl;
+            }
         }
     }
 
 
 
 
-    // Run calculation
-
+//    // Run calculation
 //    ofstream ofile;
-//    ofile.open("Hydrogen_Energy.dat");
+//    ofile.open("../Out/Hydrogen_Energy.dat");
 //    int N = 100;
 //    int nCycles1 = 10000;
 //    int nCycles2 = 1000000;
-//    double Rmin = 0.5;
-//    double Rmax = 4.0;
+//    double Rmin = 0.1;
+//    double Rmax = 6.0;
 //    alpha = 1.5;
 //    beta = 0.5;
 //    double deltaR = (Rmax - Rmin)/((double)N);
@@ -113,7 +124,7 @@ int main()
 //        if (minimize == 1){
 //            solver->calcEnergyGradients();
 //            solver->setNumOfCycles(nCycles1);
-//            Minimizer minimizer;
+//            MinimizerAlphaBeta minimizer;
 //            minimizer.run(solver, wf, alpha, beta);
 //            alpha = minimizer.getAlpha();
 //            beta = minimizer.getBeta();
@@ -122,14 +133,16 @@ int main()
 
 //        solver->setNumOfCycles(nCycles2);
 //        solver->runMonteCarloIntegration();
-//        ofile << R << "  " << solver->getEnergy() << endl;
-
-//        cout << ", R = " << R << ", E = " << solver->getEnergy() << endl;
+//        if (my_rank == 0){
+//            ofile << R << "  " << solver->getEnergy() << "  " << solver->getPotentialEnergy() << endl;
+//            cout << ", R = " << R << ", E = " << solver->getEnergy() << ", EP = "<< solver->getPotentialEnergy() <<  endl;
+//        }
 //    }
+
 //    ofile.close();
     solver->runMonteCarloIntegration();
     if (my_rank == 0){
-        cout << "Energy: " << solver->getEnergy() << endl << "Variance (one proc) = " << solver->getVariance() << endl;
+        cout << "Energy: " << solver->getEnergy() << endl << "Variance (no blocking) = " << solver->getVariance() << endl;
     }
 
     MPI_Finalize();

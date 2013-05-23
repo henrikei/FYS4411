@@ -21,6 +21,7 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
 
     double energySum = 0;
     double energySquaredSum = 0;
+    double potentialEnergySum = 0;
     double deltaE;
 
     double dPsidAlpha = 0;
@@ -87,9 +88,12 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
 
             // calculate integrals
             if (cycle >= thermalization){
-                deltaE = localE->getValue(rNew, wf, charge);
+                localE->calculate(rNew, wf, charge);
+                deltaE = localE->getTotal();
                 energySum += deltaE;
                 energySquaredSum += deltaE*deltaE;
+
+                potentialEnergySum += localE->getPotential();
 
                 // Write deltaE to file for later Blocking
                 outFileBlocking << deltaE << endl;
@@ -107,7 +111,7 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
 
                 // if oneBody, write out the positions of all particles after all particles
                 // have been moved
-                if(oneBody && (cycle + i) % nParticles == 0){
+                if(oneBody && (i+1) == nParticles){
                     if(oneBody < 2){
                         stringstream filename;
                         filename << "../Out/onebody" << my_rank << ".dat";
@@ -131,14 +135,17 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
         outFileOneBody.close();
     }
 
-    double energySumMPI, energySquaredSumMPI;
+    double energySumMPI, energySquaredSumMPI, potentialEnergySumMPI;
     MPI_Allreduce(&energySum, &energySumMPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     MPI_Allreduce(&energySquaredSum, &energySquaredSumMPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(&potentialEnergySum, &potentialEnergySumMPI, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     energySum = energySumMPI/numprocs;
     energySquaredSum = energySquaredSumMPI/numprocs;
+    potentialEnergySum = potentialEnergySumMPI/numprocs;
 
     energy = energySum/(nCycles * nParticles);
     variance = energySquaredSum/(nCycles * nParticles) - energy*energy;
+    potentialEnergy = potentialEnergySum/(nCycles * nParticles);
 
     if(minimizer ==1){
 
@@ -163,7 +170,7 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
         dEdBeta = 2*(betaTerm2 - betaTerm1*energy);
     }
 
-    //cout << "Acceptance ratio: " << (double)acceptCount/((double)((nCycles + thermalization)*nParticles)) << endl;
+    // cout << "Acceptance ratio: " << (double)acceptCount/((double)((nCycles + thermalization)*nParticles)) << endl;
 }
 
 // Calculates greens function ratio. y and x are position matrices. n is particle number.

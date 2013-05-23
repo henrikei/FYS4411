@@ -8,7 +8,7 @@ class DiatomicHam : public localEnergy
 {
 public:
     DiatomicHam();
-    double getValue(const mat &r, waveFunction *wf, double charge);
+    void calculate(const mat &r, waveFunction *wf, double charge);
     void setR(double r);
 private:
     rowvec3 rNuclei;

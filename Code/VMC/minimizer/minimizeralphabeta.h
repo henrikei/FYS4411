@@ -1,25 +1,25 @@
-#ifndef MINIMIZER_H
-#define MINIMIZER_H
+#ifndef MINIMIZERALPHABETA_H
+#define MINIMIZERALPHABETA_H
 
-#include "vmcsolver/vmcsolver.h"
+#include <vmcsolver/vmcsolver.h>
 
 
-class Minimizer
+class MinimizerAlphaBeta
 {
 public:
-    Minimizer();
+    MinimizerAlphaBeta();
     void run(VMCSolver *solver, waveFunction *wf, double alph, double bet);
     double getAlpha();
     double getBeta();
 private:
     double alpha;
-    double beta;
     double hAlpha;
-    double hBeta;
     double hAlphaMax;
+    double beta;
+    double hBeta;
     double hBetaMax;
     double toler;
     int maxIter;
 };
 
-#endif // MINIMIZER_H
+#endif // MINIMIZERALPHABETA_H

@@ -1,7 +1,6 @@
-#include "minimizer.h"
-#include "waveFunction/wavefunction.h"
+#include "minimizeralphabeta.h"
 
-Minimizer::Minimizer()
+MinimizerAlphaBeta::MinimizerAlphaBeta()
 {
     hAlpha = 0.01;
     hBeta = 0.01;
@@ -11,7 +10,7 @@ Minimizer::Minimizer()
     toler = 0.0001;
 }
 
-void Minimizer::run(VMCSolver *solver, waveFunction *wf, double alph, double bet){
+void MinimizerAlphaBeta::run(VMCSolver *solver, waveFunction *wf, double alph, double bet){
     int counter = 0;
     double dAlphaOld = 0;
     double dAlphaNew = 0;
@@ -51,22 +50,21 @@ void Minimizer::run(VMCSolver *solver, waveFunction *wf, double alph, double bet
         alpha -= hAlpha*dAlphaNew;
         beta -= hBeta*dBetaNew;
 
-        if (solver->getMPIRank() ==0 ){
+        if (solver->getMPIRank() == 0 ){
             cout << "Alpha = " << alpha << endl;
             cout << "Beta = " << beta << endl;
-
-            if(hAlpha < toler && hBeta < toler){
-                cout << "Reached tolerance" << endl;
-                break;
-            }
+        }
+        if(hAlpha < toler && hBeta < toler){
+            //cout << "Reached tolerance" << endl;
+            break;
         }
     }
 }
 
-double Minimizer::getAlpha(){
+double MinimizerAlphaBeta::getAlpha(){
     return alpha;
 }
 
-double Minimizer::getBeta(){
+double MinimizerAlphaBeta::getBeta(){
     return beta;
 }

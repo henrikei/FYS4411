@@ -20,6 +20,7 @@ public:
     void setNumOfCycles(int n);
     double getEnergy();
     double getVariance();
+    double getPotentialEnergy();
     double getdEdAlpha();
     double getdEdBeta();
     void calcEnergyGradients();
@@ -53,6 +54,7 @@ protected:
 
     double energy;
     double variance;
+    double potentialEnergy;
 
     double dEdAlpha;
     double dEdBeta;

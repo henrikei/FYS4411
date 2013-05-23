@@ -2,13 +2,16 @@
 
 AtomicHam::AtomicHam()
 {
+    kineticEnergy = 0;
+    potentialEnergy = 0;
+    totalEnergy = 0;
 }
 
-double AtomicHam::getValue(const mat &r, waveFunction *wf, double charge){
+void AtomicHam::calculate(const mat &r, waveFunction *wf, double charge){
 
-    double kineticEnergy = -0.5*wf->getLaplaceRatio(r);
+    kineticEnergy = -0.5*wf->getLaplaceRatio(r);
 
-    double potentialEnergy = 0;
+    potentialEnergy = 0;
     double rSingleParticle = 0;
     double r12 = 0;
     int nParticles = r.n_rows;
@@ -33,7 +36,7 @@ double AtomicHam::getValue(const mat &r, waveFunction *wf, double charge){
             potentialEnergy += 1/sqrt(r12);
         }
     }
-    return (kineticEnergy + potentialEnergy);
+    totalEnergy = kineticEnergy + potentialEnergy;
 }
 
 void AtomicHam::setR(double r){

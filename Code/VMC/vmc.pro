@@ -15,11 +15,12 @@ SOURCES += main.cpp \
     Slater/slater.cpp \
     Jastrow/jastrow.cpp \
     Jastrow/nojastrow.cpp \
-    minimizer/minimizer.cpp \
     orbitals/hydrogenic.cpp \
     orbitals/diatomic.cpp \
     localenergy/atomicham.cpp \
-    localenergy/diatomicham.cpp
+    localenergy/diatomicham.cpp \
+    minimizer/minimizeralpha.cpp \
+    minimizer/minimizeralphabeta.cpp
 
 HEADERS += \
     lib.h \
@@ -32,11 +33,12 @@ HEADERS += \
     Slater/slater.h \
     Jastrow/jastrow.h \
     Jastrow/nojastrow.h \
-    minimizer/minimizer.h \
     orbitals/hydrogenic.h \
     orbitals/diatomic.h \
     localenergy/diatomicham.h \
-    localenergy/atomicham.h
+    localenergy/atomicham.h \
+    minimizer/minimizeralpha.h \
+    minimizer/minimizeralphabeta.h
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3
