@@ -43,8 +43,15 @@ void Slater::update(const mat &R){
             slaterDown(i,j) = orbitals->getValue(nParticles/2 + i, j, R);
         }
     }
-    invSlaterUp = inv(slaterUp);
-    invSlaterDown = inv(slaterDown);
+    try{
+        invSlaterUp = inv(slaterUp);
+        invSlaterDown = inv(slaterDown);
+    }catch(std::runtime_error){
+        invSlaterUp = zeros(nParticles/2, nParticles/2);
+        invSlaterDown = zeros(nParticles/2, nParticles/2);
+        cout << slaterUp << endl;
+        cout << slaterDown << endl;
+    }
 }
 
 

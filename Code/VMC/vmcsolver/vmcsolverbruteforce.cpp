@@ -49,15 +49,18 @@ void VMCSolverBruteForce::runMonteCarloIntegration()
 
     // initial trial positions
     double initialLength = 10;
-    for(int i = 0; i < nParticles; i++) {
-        for(int j = 0; j < nDimensions; j++) {
-            rOld(i,j) = initialLength*(randu() - 0.5);
+    // While loop checks if improper starting positions creates singular Slater (see slater->update())
+    double test = 0;
+    while (test == 0){
+        for(int i = 0; i < nParticles; i++) {
+            for(int j = 0; j < nDimensions; j++) {
+                rOld(i,j) = initialLength*(randu() - 0.5);
+            }
         }
+        rNew = rOld;
+        wf->update(rOld);
+        test = wf->getRatio(0, rNew, rOld);
     }
-    rNew = rOld;
-
-    // Store the current value of the wave function
-    wf->update(rOld);
 
     // trial Monte Carlo loop to achieve acceptance rate of approximately 0.5
     stepLength = 0;

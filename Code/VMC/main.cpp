@@ -30,14 +30,14 @@ int main()
 
 
     // Configuration
-    int nParticles = 2;
-    int charge = 1;
-    double alpha = 1.30;
-    double beta = 0.40;
-    double R = 1.34;
+    int nParticles = 8;
+    int charge = 4;
+    double alpha = 3.766;
+    double beta = 0.521;
+    double R = 2.0;
     int jastrow = 1;
     int importanceSampling = 1;
-    int nCycles = 1000000; //total nCycles
+    int nCycles = 100000; //total nCycles
     int minimize = 0;
     int oneBody = 1;
     string orbitalType = "Diatomic";          // Hydrogenic or Diatomic
@@ -111,10 +111,10 @@ int main()
 //    ofile.open("../Out/Hydrogen_Energy.dat");
 //    int N = 100;
 //    int nCycles1 = 10000;
-//    int nCycles2 = 1000000;
-//    double Rmin = 0.1;
-//    double Rmax = 6.0;
-//    alpha = 1.5;
+//    int nCycles2 = 10000;
+//    double Rmin = 0.2;
+//    double Rmax = 8.0;
+//    alpha = 4.0;
 //    beta = 0.5;
 //    double deltaR = (Rmax - Rmin)/((double)N);
 //    for (int i = 0; i < N; i++){

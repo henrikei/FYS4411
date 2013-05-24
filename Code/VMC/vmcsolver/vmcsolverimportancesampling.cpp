@@ -42,14 +42,19 @@ void VMCSolverImportanceSampling::runMonteCarloIntegration()
 
 
     // initial trial positions
-    for(int i = 0; i < nParticles; i++) {
-        for(int j = 0; j < nDimensions; j++) {
-            rOld(i,j) = randn()*sqrt(timeStep);
+    // While loop checks if improper starting positions creates singular Slater (see slater->update())
+    double test = 0;
+    while (test == 0){
+        for(int i = 0; i < nParticles; i++) {
+            for(int j = 0; j < nDimensions; j++) {
+                rOld(i,j) = randn()*4; //sqrt(timeStep);
+            }
         }
+        rNew = rOld;
+        wf->update(rOld);
+        test = wf->getRatio(0, rNew, rOld);
     }
-    rNew = rOld;
 
-    wf->update(rOld);
     quantumForceOld = wf->getQuantumForceRatio();
 
 
