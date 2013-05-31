@@ -47,8 +47,12 @@ void MinimizerAlphaBeta::run(VMCSolver *solver, waveFunction *wf, double alph, d
             hBeta = 1.25*hBeta;
         }
 
-        alpha -= hAlpha*dAlphaNew;
-        beta -= hBeta*dBetaNew;
+        if (hAlpha*dAlphaNew < alpha){
+            alpha -= hAlpha*dAlphaNew;
+        }
+        if (hBeta*dBetaNew < beta){
+            beta -= hBeta*dBetaNew;
+        }
 
         if (solver->getMPIRank() == 0 ){
             cout << "Alpha = " << alpha << endl;

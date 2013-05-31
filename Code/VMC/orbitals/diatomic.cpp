@@ -34,8 +34,6 @@ double Diatomic::getValue(int particleNum, int quantumNum, const mat &R){
                  - hydrogenic->getValue(particleNum, quantumNum/2, R - rNuclei);
     }
     return value;
-//    return (hydrogenic->getValue(particleNum, quantumNum, R + rNuclei)
-//            + hydrogenic->getValue(particleNum, quantumNum, R - rNuclei));
 }
 
 rowvec3 Diatomic::getGradient(int particleNum, int quantumNum, const mat &R){
@@ -50,9 +48,6 @@ rowvec3 Diatomic::getGradient(int particleNum, int quantumNum, const mat &R){
     }
 
     return gradient;
-
-//    return (hydrogenic->getGradient(particleNum, quantumNum, R + rNuclei)
-//            + hydrogenic->getGradient(particleNum, quantumNum, R - rNuclei));
 }
 
 double Diatomic::getLaplacian(int particleNum, int quantumNum, const mat &R){
@@ -69,9 +64,6 @@ double Diatomic::getLaplacian(int particleNum, int quantumNum, const mat &R){
     }
 
     return laplacian;
-
-//    return (hydrogenic->getLaplacian(particleNum, quantumNum, R + rNuclei)
-//            + hydrogenic->getLaplacian(particleNum, quantumNum, R - rNuclei));
 }
 
 double Diatomic::getAlphaDerivative(int particleNum, int quantumNum, const mat &R){
@@ -88,7 +80,4 @@ double Diatomic::getAlphaDerivative(int particleNum, int quantumNum, const mat &
     }
 
     return dPhidAlpha;
-
-//    return (hydrogenic->getAlphaDerivative(particleNum, quantumNum, R + rNuclei)
-//            + hydrogenic->getAlphaDerivative(particleNum, quantumNum, R - rNuclei));
 }
